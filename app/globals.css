@@ -850,6 +850,270 @@ a {
   margin-top: 4px;
 }
 
+
+
+.daily-practice-section {
+  padding: 84px 0 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.practice-heading {
+  margin-bottom: 18px;
+}
+
+.practice-intro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.practice-intro strong {
+  color: var(--ink);
+}
+
+.practice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.practice-card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 24px;
+  background: rgba(255,255,255,.68);
+  box-shadow: var(--shadow);
+}
+
+.practice-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.practice-number {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  color: var(--green);
+}
+
+.practice-type {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.practice-instruction {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 20px 0 14px;
+}
+
+.practice-sentence {
+  margin: 0;
+  padding: 20px;
+  border-radius: 18px;
+  background: #f1f4e8;
+  font-family: Georgia, serif;
+  font-size: 20px;
+  line-height: 1.55;
+}
+
+.practice-options {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.practice-options button {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 12px;
+  padding: 12px 13px;
+  cursor: pointer;
+  transition: border-color .2s ease, transform .2s ease, background .2s ease;
+}
+
+.practice-options button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(31,111,80,.32);
+}
+
+.practice-options button.selected {
+  border-color: var(--green);
+  background: #edf7f2;
+}
+
+.practice-options button.correct {
+  border-color: #3f8b65;
+  background: #e4f4eb;
+}
+
+.practice-options button.wrong {
+  border-color: #bd654d;
+  background: #f9eae5;
+}
+
+.practice-feedback {
+  margin-top: 14px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.practice-feedback.good {
+  background: #e4f4eb;
+  color: #1f6f50;
+}
+
+.practice-feedback.bad {
+  background: #f9eae5;
+  color: #8f4d3a;
+}
+
+.target-word {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 18px 0 12px;
+  flex-wrap: wrap;
+}
+
+.target-word strong {
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.target-word span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sentence-input {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  padding: 14px;
+  font: inherit;
+  line-height: 1.6;
+  min-height: 116px;
+  outline: none;
+}
+
+.sentence-input:focus {
+  border-color: rgba(31,111,80,.42);
+  box-shadow: 0 0 0 3px rgba(31,111,80,.08);
+}
+
+.practice-check {
+  margin-top: 12px;
+}
+
+.sentence-review {
+  margin-top: 14px;
+}
+
+.sentence-review > p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sentence-sample {
+  border-top: 1px dashed var(--line);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sentence-sample span {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.sentence-sample strong {
+  font-family: Georgia, serif;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.practice-rating {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.practice-rating button {
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.practice-rating button:hover:not(:disabled),
+.practice-rating button.active {
+  border-color: var(--green);
+  background: #edf7f2;
+}
+
+.practice-complete {
+  border-radius: 24px;
+  background: #17261f;
+  color: white;
+  padding: 26px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.practice-complete h2 {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  margin: 8px 0 6px;
+}
+
+.practice-complete p {
+  color: rgba(255,255,255,.64);
+  margin: 0;
+}
+
+.practice-complete-mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 22px;
+}
+
 .history-strip {
   display: flex;
   gap: 10px;
@@ -1035,7 +1299,8 @@ footer {
   }
 
   .word-grid,
-  .quiz-grid {
+  .quiz-grid,
+  .practice-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1073,6 +1338,7 @@ footer {
 
   .section-heading,
   .complete-row,
+  .practice-complete,
   .review-callout,
   .quiz-result,
   footer {
