@@ -4,10 +4,25 @@ import { useEffect, useMemo, useState } from "react";
 import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";
 import { ARTICLES } from "@/lib/articles";
 import DailyArticleExperience from "@/components/DailyArticleExperience";
+import DailyPracticeExperience from "@/components/DailyPracticeExperience";
 
 type LearnedWord = {
   firstLearnedDate: string;
   lastSeenDate: string;
+};
+
+type ReviewState = {
+  box: number;
+  nextReviewDate: string;
+  correctCount: number;
+  wrongCount: number;
+  lastReviewedDate: string | null;
+};
+
+type DailyPracticeRecord = {
+  completedAt: string;
+  score: number;
+  total: number;
 };
 
 type QuizResult = {
@@ -18,11 +33,15 @@ type QuizResult = {
 };
 
 type Progress = {
-  version: 2;
+  version: 3;
   streak: number;
   lastStudyDate: string | null;
   completedDates: string[];
   dailyPlans: Record<string, string[]>;
+  dailyPracticePlans: Record<string, string[]>;
+  practiceDates: string[];
+  dailyPractice: Record<string, DailyPracticeRecord>;
+  review: Record<string, ReviewState>;
   dailyArticlePlans: Record<string, string>;
   readArticleDates: string[];
   learned: Record<string, LearnedWord>;
@@ -39,11 +58,15 @@ type QuizQuestion = {
 const STORAGE_KEY = "fastenglish-progress-v1";
 
 const EMPTY_PROGRESS: Progress = {
-  version: 2,
+  version: 3,
   streak: 0,
   lastStudyDate: null,
   completedDates: [],
   dailyPlans: {},
+  dailyPracticePlans: {},
+  practiceDates: [],
+  dailyPractice: {},
+  review: {},
   dailyArticlePlans: {},
   readArticleDates: [],
   learned: {},
@@ -128,6 +151,82 @@ function buildDailyArticlePlan(dateKey: string, assignedIds: Set<string>) {
   return seededShuffle(pool, hashString("article-" + dateKey))[0]?.id ?? ARTICLES[0].id;
 }
 
+function addDays(dateKey: string, days: number) {
+  const parts = dateKey.split("-").map(Number);
+  const date = new Date(parts[0], parts[1] - 1, parts[2]);
+  date.setDate(date.getDate() + days);
+  return localDateKey(date);
+}
+
+function createReviewState(dateKey: string): ReviewState {
+  return {
+    box: 0,
+    nextReviewDate: addDays(dateKey, 1),
+    correctCount: 0,
+    wrongCount: 0,
+    lastReviewedDate: null
+  };
+}
+
+function applyReviewResult(
+  state: ReviewState,
+  correct: boolean,
+  dateKey: string
+): ReviewState {
+  if (!correct) {
+    return {
+      ...state,
+      box: 0,
+      nextReviewDate: addDays(dateKey, 1),
+      wrongCount: state.wrongCount + 1,
+      lastReviewedDate: dateKey
+    };
+  }
+
+  const nextBox = Math.min(5, state.box + 1);
+  const intervals = [1, 2, 4, 7, 14, 30];
+  return {
+    ...state,
+    box: nextBox,
+    nextReviewDate: addDays(dateKey, intervals[nextBox]),
+    correctCount: state.correctCount + 1,
+    lastReviewedDate: dateKey
+  };
+}
+
+function buildDailyPracticePlan(
+  progress: Progress,
+  dateKey: string,
+  todayIds: string[]
+) {
+  const todaySet = new Set(todayIds);
+  const due = Object.entries(progress.review)
+    .filter(
+      ([id, state]) =>
+        !todaySet.has(id) &&
+        state.nextReviewDate <= dateKey &&
+        Boolean(WORDS_BY_ID[id])
+    )
+    .map(([id]) => id);
+
+  const recent = progress.completedDates
+    .slice(-21)
+    .reverse()
+    .flatMap((date) => progress.dailyPlans[date] ?? [])
+    .filter((id) => Boolean(WORDS_BY_ID[id]) && !todaySet.has(id));
+
+  const duePicked = seededShuffle([...new Set(due)], hashString("due-" + dateKey)).slice(0, 2);
+  const fallbackPool = [
+    ...duePicked,
+    ...seededShuffle(
+      [...new Set([...recent, ...todayIds])].filter((id) => !duePicked.includes(id)),
+      hashString("fallback-" + dateKey)
+    )
+  ];
+
+  return [...new Set(fallbackPool)].slice(0, 2);
+}
+
 function speak(word: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
@@ -203,10 +302,28 @@ export default function FastEnglishApp() {
       const parsed = raw ? (JSON.parse(raw) as Progress) : EMPTY_PROGRESS;
       const learnedIds = new Set(Object.keys(parsed.learned ?? {}));
       const dailyPlans = { ...(parsed.dailyPlans ?? {}) };
+      const dailyPracticePlans = { ...(parsed.dailyPracticePlans ?? {}) };
+      const practiceDates = [...(parsed.practiceDates ?? [])];
+      const dailyPractice = { ...(parsed.dailyPractice ?? {}) };
+      const review = { ...(parsed.review ?? {}) };
       const dailyArticlePlans = { ...(parsed.dailyArticlePlans ?? {}) };
+
+      Object.keys(parsed.learned ?? {}).forEach((id) => {
+        if (!review[id]) {
+          review[id] = createReviewState(today);
+        }
+      });
 
       if (!dailyPlans[today]?.length) {
         dailyPlans[today] = buildDailyPlan(today, learnedIds);
+      }
+
+      if (!dailyPracticePlans[today]?.length) {
+        dailyPracticePlans[today] = buildDailyPracticePlan(
+          { ...EMPTY_PROGRESS, ...parsed, review, dailyPlans } as Progress,
+          today,
+          dailyPlans[today]
+        );
       }
 
       if (!dailyArticlePlans[today]) {
@@ -219,8 +336,12 @@ export default function FastEnglishApp() {
       const next: Progress = {
         ...EMPTY_PROGRESS,
         ...parsed,
-        version: 2,
+        version: 3,
         dailyPlans,
+        dailyPracticePlans,
+        practiceDates,
+        dailyPractice,
+        review,
         dailyArticlePlans,
         readArticleDates: parsed.readArticleDates ?? [],
         learned: parsed.learned ?? {},
@@ -234,6 +355,13 @@ export default function FastEnglishApp() {
       setProgress({
         ...EMPTY_PROGRESS,
         dailyPlans: { [today]: buildDailyPlan(today, new Set()) },
+        dailyPracticePlans: {
+          [today]: buildDailyPracticePlan(
+            EMPTY_PROGRESS,
+            today,
+            buildDailyPlan(today, new Set())
+          )
+        },
         dailyArticlePlans: {
           [today]: buildDailyArticlePlan(today, new Set())
         }
@@ -254,6 +382,9 @@ export default function FastEnglishApp() {
 
   const todayIds = progress.dailyPlans[today] ?? [];
   const todayWords = todayIds.map((id) => WORDS_BY_ID[id]).filter(Boolean);
+  const practiceIds = progress.dailyPracticePlans[today] ?? [];
+  const practiceWords = practiceIds.map((id) => WORDS_BY_ID[id]).filter(Boolean);
+  const practiceCompletedToday = progress.practiceDates.includes(today);
   const completedToday = progress.completedDates.includes(today);
   const pendingCycle = getPendingCycle(progress);
   const quiz = useMemo(
@@ -278,14 +409,26 @@ export default function FastEnglishApp() {
       : 0;
 
   function completeToday() {
-    if (completedToday || todayIds.length === 0 || revealedToday < todayIds.length) return;
+    if (
+      completedToday ||
+      todayIds.length === 0 ||
+      revealedToday < todayIds.length ||
+      !practiceCompletedToday
+    ) {
+      return;
+    }
 
     const nextLearned = { ...progress.learned };
+    const nextReview = { ...progress.review };
+
     todayIds.forEach((id) => {
       nextLearned[id] = {
         firstLearnedDate: nextLearned[id]?.firstLearnedDate ?? today,
         lastSeenDate: today
       };
+      if (!nextReview[id]) {
+        nextReview[id] = createReviewState(today);
+      }
     });
 
     setProgress((current) => ({
@@ -293,8 +436,40 @@ export default function FastEnglishApp() {
       streak: current.lastStudyDate === yesterdayKey() ? displayStreak + 1 : 1,
       lastStudyDate: today,
       completedDates: [...current.completedDates, today].sort(),
-      learned: nextLearned
+      learned: nextLearned,
+      review: nextReview
     }));
+  }
+
+  function handlePracticeResult(wordId: string, correct: boolean) {
+    setProgress((current) => {
+      const currentState = current.review[wordId] ?? createReviewState(today);
+      return {
+        ...current,
+        review: {
+          ...current.review,
+          [wordId]: applyReviewResult(currentState, correct, today)
+        }
+      };
+    });
+  }
+
+  function completeDailyPractice(score: number, total: number) {
+    setProgress((current) => {
+      if (current.practiceDates.includes(today)) return current;
+      return {
+        ...current,
+        practiceDates: [...current.practiceDates, today].sort(),
+        dailyPractice: {
+          ...current.dailyPractice,
+          [today]: {
+            completedAt: new Date().toISOString(),
+            score,
+            total
+          }
+        }
+      };
+    });
   }
 
   function markArticleRead(date: string) {
@@ -346,9 +521,13 @@ export default function FastEnglishApp() {
       return;
     }
 
+    const resetDailyPlan = buildDailyPlan(today, new Set());
     setProgress({
       ...EMPTY_PROGRESS,
-      dailyPlans: { [today]: buildDailyPlan(today, new Set()) },
+      dailyPlans: { [today]: resetDailyPlan },
+      dailyPracticePlans: {
+        [today]: buildDailyPracticePlan(EMPTY_PROGRESS, today, resetDailyPlan)
+      },
       dailyArticlePlans: {
         [today]: buildDailyArticlePlan(today, new Set())
       }
@@ -388,8 +567,8 @@ export default function FastEnglishApp() {
           <span className="eyebrow">DAILY ADVANCED ENGLISH</span>
           <h1>Ít thôi. Nhưng <em>mỗi ngày.</em></h1>
           <p>
-            Mỗi ngày 5 từ B2–C2 và một bài đọc kiến thức ngắn. Học đều để giữ chuỗi,
-            tích lũy thư viện đọc và sau mỗi 7 buổi làm một bài review từ vựng.
+            Mỗi ngày 5 từ B2–C2, 2 bài ôn ngắn và một bài đọc kiến thức tùy chọn.
+            Học đều để giữ chuỗi, nhớ từ lâu hơn và sau mỗi 7 buổi làm một bài review.
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="#today">
@@ -512,21 +691,37 @@ export default function FastEnglishApp() {
           })}
         </div>
 
+        <DailyPracticeExperience
+          words={practiceWords}
+          completed={practiceCompletedToday}
+          onResult={handlePracticeResult}
+          onComplete={completeDailyPractice}
+        />
+
         <div className="complete-row">
           <div>
             <strong>
               {completedToday
                 ? "Hôm nay đã hoàn thành ✓"
-                : revealedToday + "/5 từ đã mở nghĩa"}
+                : revealedToday + "/5 từ đã mở nghĩa · " +
+                  (practiceCompletedToday ? "2/2 bài ôn ✓" : "còn 2 bài ôn")}
             </strong>
-            <span>Tiến độ chỉ được lưu trên trình duyệt này.</span>
+            <span>
+              {completedToday
+                ? "Streak đã được cập nhật trên trình duyệt này."
+                : "Làm đủ 5 từ + 2 bài ôn để tính là một ngày hoàn thành."}
+            </span>
           </div>
           <button
             className="primary-button"
-            disabled={completedToday || revealedToday < todayIds.length}
+            disabled={
+              completedToday ||
+              revealedToday < todayIds.length ||
+              !practiceCompletedToday
+            }
             onClick={completeToday}
           >
-            {completedToday ? "Đã giữ chuỗi hôm nay" : "Hoàn thành & giữ chuỗi"}
+            {completedToday ? "Đã giữ chuỗi hôm nay" : "Hoàn thành ngày học"}
           </button>
         </div>
       </section>
@@ -641,7 +836,7 @@ export default function FastEnglishApp() {
           <span className="brand-mark">F</span>
           <strong>FastEnglish</strong>
         </div>
-        <p>5 words + 1 idea today. Better English tomorrow.</p>
+        <p>5 words + 2 practice + 1 idea today. Better English tomorrow.</p>
       </footer>
     </main>
   );
