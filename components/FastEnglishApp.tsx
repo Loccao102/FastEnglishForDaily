@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";\nimport { ARTICLES } from "@/lib/articles";\nimport DailyArticleExperience from "@/components/DailyArticleExperience";
+import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";
+import { ARTICLES } from "@/lib/articles";
+import DailyArticleExperience from "@/components/DailyArticleExperience";
 
 type LearnedWord = {
   firstLearnedDate: string;
