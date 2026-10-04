@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";
+import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";\nimport { ARTICLES } from "@/lib/articles";\nimport DailyArticleExperience from "@/components/DailyArticleExperience";
 
 type LearnedWord = {
   firstLearnedDate: string;
@@ -16,11 +16,13 @@ type QuizResult = {
 };
 
 type Progress = {
-  version: 1;
+  version: 2;
   streak: number;
   lastStudyDate: string | null;
   completedDates: string[];
   dailyPlans: Record<string, string[]>;
+  dailyArticlePlans: Record<string, string>;
+  readArticleDates: string[];
   learned: Record<string, LearnedWord>;
   quizResults: QuizResult[];
 };
@@ -35,11 +37,13 @@ type QuizQuestion = {
 const STORAGE_KEY = "fastenglish-progress-v1";
 
 const EMPTY_PROGRESS: Progress = {
-  version: 1,
+  version: 2,
   streak: 0,
   lastStudyDate: null,
   completedDates: [],
   dailyPlans: {},
+  dailyArticlePlans: {},
+  readArticleDates: [],
   learned: {},
   quizResults: []
 };
@@ -114,6 +118,12 @@ function buildDailyPlan(dateKey: string, learnedIds: Set<string>) {
   });
 
   return result;
+}
+
+function buildDailyArticlePlan(dateKey: string, assignedIds: Set<string>) {
+  const fresh = ARTICLES.filter((article) => !assignedIds.has(article.id));
+  const pool = fresh.length > 0 ? fresh : ARTICLES;
+  return seededShuffle(pool, hashString("article-" + dateKey))[0]?.id ?? ARTICLES[0].id;
 }
 
 function speak(word: string) {
@@ -191,15 +201,26 @@ export default function FastEnglishApp() {
       const parsed = raw ? (JSON.parse(raw) as Progress) : EMPTY_PROGRESS;
       const learnedIds = new Set(Object.keys(parsed.learned ?? {}));
       const dailyPlans = { ...(parsed.dailyPlans ?? {}) };
+      const dailyArticlePlans = { ...(parsed.dailyArticlePlans ?? {}) };
 
       if (!dailyPlans[today]?.length) {
         dailyPlans[today] = buildDailyPlan(today, learnedIds);
       }
 
+      if (!dailyArticlePlans[today]) {
+        dailyArticlePlans[today] = buildDailyArticlePlan(
+          today,
+          new Set(Object.values(dailyArticlePlans))
+        );
+      }
+
       const next: Progress = {
         ...EMPTY_PROGRESS,
         ...parsed,
+        version: 2,
         dailyPlans,
+        dailyArticlePlans,
+        readArticleDates: parsed.readArticleDates ?? [],
         learned: parsed.learned ?? {},
         completedDates: parsed.completedDates ?? [],
         quizResults: parsed.quizResults ?? []
@@ -210,7 +231,10 @@ export default function FastEnglishApp() {
     } catch {
       setProgress({
         ...EMPTY_PROGRESS,
-        dailyPlans: { [today]: buildDailyPlan(today, new Set()) }
+        dailyPlans: { [today]: buildDailyPlan(today, new Set()) },
+        dailyArticlePlans: {
+          [today]: buildDailyArticlePlan(today, new Set())
+        }
       });
     } finally {
       setHydrated(true);
@@ -271,6 +295,15 @@ export default function FastEnglishApp() {
     }));
   }
 
+  function markArticleRead(date: string) {
+    setProgress((current) => ({
+      ...current,
+      readArticleDates: current.readArticleDates.includes(date)
+        ? current.readArticleDates
+        : [...current.readArticleDates, date].sort()
+    }));
+  }
+
   function submitQuiz() {
     if (!pendingCycle || quiz.length === 0) return;
     if (Object.keys(quizAnswers).length < quiz.length) return;
@@ -313,7 +346,10 @@ export default function FastEnglishApp() {
 
     setProgress({
       ...EMPTY_PROGRESS,
-      dailyPlans: { [today]: buildDailyPlan(today, new Set()) }
+      dailyPlans: { [today]: buildDailyPlan(today, new Set()) },
+      dailyArticlePlans: {
+        [today]: buildDailyArticlePlan(today, new Set())
+      }
     });
     setRevealed({});
     setQuizAnswers({});
@@ -350,8 +386,8 @@ export default function FastEnglishApp() {
           <span className="eyebrow">DAILY ADVANCED ENGLISH</span>
           <h1>Ít thôi. Nhưng <em>mỗi ngày.</em></h1>
           <p>
-            Mỗi ngày 5 từ B2–C2. Học xong để giữ chuỗi, và sau mỗi 7 buổi
-            hệ thống sẽ kéo đúng những từ đã học vào một bài review ngắn.
+            Mỗi ngày 5 từ B2–C2 và một bài đọc kiến thức ngắn. Học đều để giữ chuỗi,
+            tích lũy thư viện đọc và sau mỗi 7 buổi làm một bài review từ vựng.
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="#today">
@@ -393,6 +429,10 @@ export default function FastEnglishApp() {
         <article>
           <span className="stat-icon">✓</span>
           <div><strong>{progress.completedDates.length}</strong><span>Buổi hoàn thành</span></div>
+        </article>
+        <article>
+          <span className="stat-icon">☰</span>
+          <div><strong>{progress.readArticleDates.length}</strong><span>Bài đã đọc</span></div>
         </article>
         <article>
           <span className="stat-icon">✦</span>
@@ -488,6 +528,13 @@ export default function FastEnglishApp() {
           </button>
         </div>
       </section>
+
+      <DailyArticleExperience
+        today={today}
+        assignments={progress.dailyArticlePlans}
+        readDates={progress.readArticleDates}
+        onMarkRead={markArticleRead}
+      />
 
       <section className="history-section">
         <div className="section-heading">
@@ -592,7 +639,7 @@ export default function FastEnglishApp() {
           <span className="brand-mark">F</span>
           <strong>FastEnglish</strong>
         </div>
-        <p>5 words today. Better English tomorrow.</p>
+        <p>5 words + 1 idea today. Better English tomorrow.</p>
       </footer>
     </main>
   );
