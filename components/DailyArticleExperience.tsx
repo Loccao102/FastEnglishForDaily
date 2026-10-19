@@ -564,7 +564,7 @@ export default function DailyArticleExperience({
                 aria-label={"Tô màu " + color.label + " và lưu"}
                 title={"Tô " + color.label + " và lưu"}
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => saveSelection(color)} />
+                onClick={() => saveSelection(color.key)} />
             ))}
             <button className="selection-cancel" aria-label="Hủy chọn"
               onClick={() => { setSelectionDraft(null); window.getSelection()?.removeAllRanges(); }}>✕</button>
