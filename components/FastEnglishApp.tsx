@@ -392,9 +392,11 @@ export default function FastEnglishApp() {
     [pendingCycle, progress]
   );
 
-  const revealedToday = Object.keys(revealed).filter(
-    (id) => todayIds.includes(id) && revealed[id]
-  ).length;
+  const revealedToday = completedToday
+    ? todayIds.length
+    : Object.keys(revealed).filter(
+        (id) => todayIds.includes(id) && revealed[id]
+      ).length;
   const cycleProgress = progress.completedDates.length % 7;
   const nextQuizIn = pendingCycle
     ? 0
@@ -547,34 +549,61 @@ export default function FastEnglishApp() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" id="top">
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
-      <section className="topbar">
-        <a className="brand" href="#today" aria-label="FastEnglish">
+      <header className="topbar">
+        <a className="brand" href="#top" aria-label="FastEnglish – về đầu trang">
           <span className="brand-mark">F</span>
           <span>
             <strong>FastEnglish</strong>
-            <small>5 words • every day</small>
+            <small>5 từ mới mỗi ngày</small>
           </span>
         </a>
-        <button className="ghost-button" onClick={resetProgress}>Reset local</button>
-      </section>
+        <nav className="quick-nav" aria-label="Điều hướng học tập">
+          <a href="#today" className="quick-nav-primary">Học hôm nay</a>
+          <a href="#daily-practice">Luyện tập</a>
+          <a href="#daily-reading">Bài đọc</a>
+          <a href="#history">Lịch sử</a>
+        </nav>
+      </header>
 
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">DAILY ADVANCED ENGLISH</span>
-          <h1>Ít thôi. Nhưng <em>mỗi ngày.</em></h1>
+          <span className="eyebrow">5 TỪ MỚI · MỖI NGÀY MỘT CHÚT</span>
+          <h1>Giỏi tiếng Anh hơn, <em>từng ngày.</em></h1>
           <p>
-            Mỗi ngày 5 từ B2–C2, 2 bài ôn ngắn và một bài đọc kiến thức tùy chọn.
-            Học đều để giữ chuỗi, nhớ từ lâu hơn và sau mỗi 7 buổi làm một bài review.
+            5 từ vựng B2–C2, 2 bài luyện nhớ chủ động và một bài đọc ngắn.
+            Học vừa sức, ôn đúng lúc, tiến bộ theo nhịp của bạn.
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="#today">
-              Học 5 từ hôm nay <span>↓</span>
+              {completedToday ? "Xem lại bài hôm nay" : "Bắt đầu học hôm nay"} <span aria-hidden="true">↓</span>
             </a>
             <span className="today-label">{formatDate(today)}</span>
+          </div>
+          <div className="today-checklist" aria-live="polite">
+            <div className="today-checklist-title">
+              <strong>Tiến độ hôm nay</strong>
+              <span>{completedToday ? "Đã hoàn thành ✓" : revealedToday + "/" + todayWords.length + " từ đã mở"}</span>
+            </div>
+            <div
+              className="progress-track today-progress-track"
+              role="progressbar"
+              aria-label="Số từ đã mở nghĩa hôm nay"
+              aria-valuemin={0}
+              aria-valuemax={todayWords.length}
+              aria-valuenow={revealedToday}
+            >
+              <div className="progress-fill" style={{
+                width: (todayWords.length ? (revealedToday / todayWords.length) * 100 : 0) + "%"
+              }} />
+            </div>
+            <div className="today-checklist-foot">
+              <span>{practiceCompletedToday ? "✓ Đã xong 2 bài ôn" : "○ Còn 2 bài ôn ngắn"}</span>
+              <a href="#daily-practice">Tới bài ôn →</a>
+            </div>
           </div>
         </div>
 
@@ -602,7 +631,7 @@ export default function FastEnglishApp() {
         </div>
       </section>
 
-      <section className="stats-grid">
+      <section className="stats-grid" aria-label="Thống kê học tập">
         <article>
           <span className="stat-icon">◫</span>
           <div><strong>{learnedCount}</strong><span>Từ đã học</span></div>
@@ -650,7 +679,7 @@ export default function FastEnglishApp() {
 
         <div className="word-grid">
           {todayWords.map((entry, index) => {
-            const isRevealed = revealed[entry.id];
+            const isRevealed = completedToday || Boolean(revealed[entry.id]);
             return (
               <article className={"word-card " + (isRevealed ? "revealed" : "")} key={entry.id}>
                 <div className="word-card-top">
@@ -673,6 +702,7 @@ export default function FastEnglishApp() {
                 {!isRevealed ? (
                   <button
                     className="reveal-button"
+                    aria-label={"Xem nghĩa của từ " + entry.word}
                     onClick={() =>
                       setRevealed((current) => ({ ...current, [entry.id]: true }))
                     }
@@ -733,7 +763,7 @@ export default function FastEnglishApp() {
         onMarkRead={markArticleRead}
       />
 
-      <section className="history-section">
+      <section className="history-section" id="history">
         <div className="section-heading">
           <div>
             <span className="eyebrow">RECENT DAYS</span>
@@ -836,7 +866,13 @@ export default function FastEnglishApp() {
           <span className="brand-mark">F</span>
           <strong>FastEnglish</strong>
         </div>
-        <p>5 words + 2 practice + 1 idea today. Better English tomorrow.</p>
+        <div className="footer-meta">
+          <p>5 từ mới · 2 bài ôn · 1 bài đọc mỗi ngày.</p>
+          <p>Dữ liệu học được lưu trên trình duyệt này. Xóa dữ liệu web sẽ mất tiến độ.</p>
+        </div>
+        <button className="ghost-button footer-reset" onClick={resetProgress}>
+          Xóa tiến độ trên máy này
+        </button>
       </footer>
     </main>
   );
