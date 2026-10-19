@@ -258,8 +258,10 @@ export default function DailyArticleExperience({
     const paragraphIndex = activeArticle.paragraphs.findIndex((part) =>
       part.toLocaleLowerCase("en").includes(needle)
     );
-    if (paragraphIndex < 0) return;
-    const start = activeArticle.paragraphs[paragraphIndex].toLocaleLowerCase("en").indexOf(needle);
+    // Some glossary words are conceptual labels or a different word form.
+    // They should still be saveable even when no exact occurrence exists.
+    const start = paragraphIndex < 0 ? 0 :
+      activeArticle.paragraphs[paragraphIndex].toLocaleLowerCase("en").indexOf(needle);
     const end = start + word.length;
     const existing = markers.find((marker) =>
       marker.articleId === activeArticle.id &&
@@ -274,7 +276,8 @@ export default function DailyArticleExperience({
     const marker: SavedMarker = {
       id: "mark-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
       articleId: activeArticle.id, paragraphIndex, start, end,
-      text: activeArticle.paragraphs[paragraphIndex].slice(start, end),
+      text: paragraphIndex < 0 ? word :
+        activeArticle.paragraphs[paragraphIndex].slice(start, end),
       color: "yellow", note: "", savedAt: new Date().toISOString()
     };
     setMarkers((previous) => [
@@ -508,6 +511,10 @@ export default function DailyArticleExperience({
                           onClick={() => sayEnglish(marker.text)}>◖))</button>
                       </div>
                       {meaning && <span className="notebook-meaning">Gợi ý nghĩa: {meaning}</span>}
+                      <a className="notebook-translate" target="_blank" rel="noopener noreferrer"
+                        href={"https://translate.google.com/?sl=en&tl=vi&op=translate&text=" + encodeURIComponent(marker.text)}>
+                        Tra nghĩa chi tiết ↗
+                      </a>
                       <p className="notebook-context">{sourceArticle?.paragraphs[marker.paragraphIndex]?.slice(
                         Math.max(0, marker.start - 75),
                         Math.min(sourceArticle.paragraphs[marker.paragraphIndex].length, marker.end + 75)
@@ -557,6 +564,9 @@ export default function DailyArticleExperience({
         <div className="selection-toolbar" role="toolbar" aria-label="Lưu đoạn đã chọn"
           style={{ left: selectionDraft.left, top: selectionDraft.top }}>
           <div className="selection-toolbar-title">Lưu: “{selectionDraft.text.slice(0, 32)}{selectionDraft.text.length > 32 ? "…" : ""}”</div>
+          {getMeaning(selectionDraft.text, activeArticle.id) && (
+            <div className="selection-hint">{getMeaning(selectionDraft.text, activeArticle.id)}</div>
+          )}
           <div className="selection-toolbar-actions">
             {COLORS.map((color) => (
               <button key={color.key}
