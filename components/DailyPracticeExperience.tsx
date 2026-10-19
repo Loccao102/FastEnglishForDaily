@@ -98,7 +98,7 @@ export default function DailyPracticeExperience({
   }
 
   function rateSentence(correct: boolean) {
-    if (completed || !sentenceChecked || sentenceRated !== null) return;
+    if (completed || !fillSubmitted || !sentenceChecked || sentenceRated !== null) return;
 
     setSentenceRated(correct);
     onResult(sentenceWord.id, correct);
@@ -176,7 +176,7 @@ export default function DailyPracticeExperience({
           </div>
 
           {fillSubmitted && (
-            <div className={"practice-feedback " + (fillCorrect ? "good" : "bad")}>
+            <div className={"practice-feedback " + (fillCorrect ? "good" : "bad")} role="status">
               <strong>{fillCorrect ? "Đúng." : "Chưa đúng."}</strong>
               <span>
                 {fillCorrect
@@ -217,7 +217,7 @@ export default function DailyPracticeExperience({
               disabled={sentence.trim().length < 4}
               onClick={checkSentence}
             >
-              Kiểm tra câu của tôi
+              Xem ví dụ và tự đánh giá
             </button>
           ) : (
             <div className="sentence-review">
@@ -225,18 +225,19 @@ export default function DailyPracticeExperience({
                 <span>Ví dụ tham khảo</span>
                 <strong>{sentenceWord.example}</strong>
               </div>
-              <p>Câu của bạn có dùng đúng ý và đúng ngữ cảnh không?</p>
+              <p>So sánh câu của bạn với ví dụ rồi tự đánh giá cách dùng từ.</p>
+              {!fillSubmitted && <p>Hãy hoàn thành bài 01 trước khi lưu kết quả hôm nay.</p>}
               <div className="practice-rating">
                 <button
                   className={sentenceRated === true ? "active" : ""}
-                  disabled={sentenceRated !== null}
+                  disabled={!fillSubmitted || sentenceRated !== null}
                   onClick={() => rateSentence(true)}
                 >
                   ✓ Nhớ được
                 </button>
                 <button
                   className={sentenceRated === false ? "active" : ""}
-                  disabled={sentenceRated !== null}
+                  disabled={!fillSubmitted || sentenceRated !== null}
                   onClick={() => rateSentence(false)}
                 >
                   ↻ Chưa chắc
