@@ -1,4 +1,6 @@
 :root {
+  --font-ui: "Segoe UI", "Arial", "Tahoma", "DejaVu Sans", sans-serif;
+  --font-display: "Segoe UI", "Arial", "Tahoma", "DejaVu Sans", sans-serif;
   --ink: #13201b;
   --muted: #65726c;
   --paper: #f6f5ef;
@@ -22,7 +24,10 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-ui);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -42,7 +47,7 @@ a {
 .app-shell {
   min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   padding: 0 max(24px, calc((100vw - 1180px) / 2));
 }
 
@@ -95,7 +100,7 @@ a {
   border-radius: 12px;
   color: white;
   background: var(--ink);
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 22px;
 }
@@ -140,7 +145,7 @@ a {
 }
 
 .hero h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-weight: 500;
   font-size: clamp(52px, 7vw, 94px);
   line-height: .94;
@@ -225,7 +230,7 @@ a {
 
 .streak-number {
   display: block;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 88px;
   line-height: .95;
   margin: 5px 0;
@@ -309,7 +314,7 @@ a {
 
 .review-callout h2 {
   margin: 8px 0 6px;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 30px;
 }
 
@@ -341,7 +346,7 @@ a {
 }
 
 .section-heading h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-weight: 500;
   font-size: clamp(36px, 5vw, 54px);
   letter-spacing: -.035em;
@@ -417,7 +422,7 @@ a {
 
 .word-index {
   color: #abb4af;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
 }
 
 .word-line {
@@ -428,7 +433,7 @@ a {
 }
 
 .word-line h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-weight: 500;
   font-size: clamp(34px, 5vw, 48px);
   letter-spacing: -.035em;
@@ -484,7 +489,7 @@ a {
   padding-left: 14px;
   border-left: 3px solid var(--lime);
   line-height: 1.6;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-style: italic;
 }
 
@@ -556,7 +561,7 @@ a {
 
 .article-feature h3 {
   max-width: 760px;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(36px, 5vw, 60px);
   line-height: 1;
   letter-spacing: -.04em;
@@ -611,7 +616,7 @@ a {
 }
 
 .article-number strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 94px;
   font-weight: 500;
   line-height: .8;
@@ -631,7 +636,7 @@ a {
 }
 
 .article-library-head h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 34px;
   font-weight: 500;
   margin: 8px 0 0;
@@ -680,7 +685,7 @@ a {
 }
 
 .article-history-card > strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 22px;
   line-height: 1.08;
   margin: 14px 0 auto;
@@ -712,7 +717,7 @@ a {
 
 .article-reader header h2 {
   max-width: 900px;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(42px, 6vw, 68px);
   line-height: 1;
   font-weight: 500;
@@ -747,7 +752,7 @@ a {
 }
 
 .article-body {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 20px;
   line-height: 1.9;
   color: #25332d;
@@ -818,7 +823,7 @@ a {
 }
 
 .article-vocab strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 18px;
 }
 
@@ -896,7 +901,7 @@ a {
 }
 
 .practice-number {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 28px;
   color: var(--green);
 }
@@ -923,7 +928,7 @@ a {
   padding: 20px;
   border-radius: 18px;
   background: #f1f4e8;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 20px;
   line-height: 1.55;
 }
@@ -994,7 +999,7 @@ a {
 }
 
 .target-word strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 34px;
   font-weight: 500;
 }
@@ -1053,7 +1058,7 @@ a {
 }
 
 .sentence-sample strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-weight: 500;
   line-height: 1.55;
 }
@@ -1091,7 +1096,7 @@ a {
 }
 
 .practice-complete h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 500;
   margin: 8px 0 6px;
@@ -1180,7 +1185,7 @@ a {
 }
 
 .quiz-card h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 32px;
   margin: 8px 0 4px;
 }
@@ -1239,7 +1244,7 @@ a {
 }
 
 .quiz-result strong {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 42px;
 }
 
@@ -1359,5 +1364,377 @@ footer {
     justify-content: center;
     gap: 10px;
     padding: 30px 0;
+  }
+}
+
+
+/* Vietnamese-safe typography and a focused daily learning layout. */
+html {
+  scroll-padding-top: 110px;
+}
+
+button, textarea, input {
+  font-family: inherit;
+}
+
+button, a, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(a, button, textarea, input):focus-visible {
+  outline: 3px solid #438e6b;
+  outline-offset: 3px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  min-height: 76px;
+  gap: 20px;
+  background: rgba(246, 245, 239, .93);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.quick-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.quick-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 15px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color .2s ease, background .2s ease;
+}
+
+.quick-nav a:hover,
+.quick-nav a:focus-visible {
+  background: #e7eee4;
+  color: var(--green-dark);
+}
+
+.quick-nav .quick-nav-primary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.quick-nav .quick-nav-primary:hover,
+.quick-nav .quick-nav-primary:focus-visible {
+  background: var(--green-dark);
+  color: #fff;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.3fr) minmax(285px, .7fr);
+  gap: clamp(22px, 4vw, 50px);
+  padding: 64px 0 48px;
+}
+
+.hero h1 {
+  font-size: clamp(45px, 5.8vw, 74px);
+  line-height: 1.08;
+  letter-spacing: -.052em;
+  max-width: 700px;
+}
+
+.hero-copy > p {
+  max-width: 590px;
+  line-height: 1.7;
+}
+
+.streak-card {
+  min-height: 310px;
+  border-radius: 28px;
+  transform: none;
+}
+
+.streak-number {
+  font-variant-numeric: tabular-nums;
+}
+
+.today-checklist {
+  max-width: 490px;
+  margin-top: 30px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.74);
+  border-radius: 18px;
+}
+
+.today-checklist-title,
+.today-checklist-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.today-checklist-title > span,
+.today-checklist-foot {
+  color: var(--muted);
+}
+
+.today-checklist-foot {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.today-checklist-foot a {
+  color: var(--green);
+  font-weight: 750;
+}
+
+.today-progress-track {
+  background: #e2e9df;
+  height: 9px;
+  margin-top: 12px;
+}
+
+.today-progress-track .progress-fill {
+  background: var(--green);
+}
+
+.today-section,
+.daily-practice-section,
+.daily-reading-section,
+.history-section,
+.quiz-section {
+  padding-top: 66px;
+}
+
+.word-card:first-child {
+  grid-column: auto;
+}
+
+.word-card {
+  min-height: 278px;
+  border-radius: 22px;
+}
+
+.word-line {
+  margin-top: 20px;
+  min-width: 0;
+}
+
+.word-line h3,
+.target-word strong,
+.practice-sentence,
+.article-history-card > strong {
+  overflow-wrap: anywhere;
+}
+
+.word-line h3 {
+  font-size: clamp(30px, 3vw, 42px);
+}
+
+.speak-button {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+}
+
+.section-heading h2 {
+  font-size: clamp(31px, 4vw, 46px);
+  line-height: 1.16;
+}
+
+.article-feature h3,
+.article-reader header h2 {
+  line-height: 1.12;
+}
+
+.article-body {
+  line-height: 1.85;
+}
+
+.stats-grid article {
+  min-width: 0;
+}
+
+.stats-grid strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.word-detail blockquote {
+  font-family: var(--font-ui);
+}
+
+.practice-card,
+.quiz-card {
+  min-width: 0;
+}
+
+.practice-options button,
+.options button,
+.practice-rating button {
+  min-height: 46px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.footer-meta {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.footer-meta p {
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.footer-reset {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.article-reader {
+  scroll-margin-top: 112px;
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 36px;
+  }
+
+  .streak-card {
+    min-height: 210px;
+    padding: 25px;
+    gap: 18px;
+  }
+
+  .streak-number {
+    font-size: 66px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats-grid article {
+    padding: 16px 12px;
+  }
+
+  .stats-grid article:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .stats-grid article:nth-child(4) {
+    border-top: 1px solid var(--line);
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    padding: 12px 0;
+  }
+
+  .quick-nav {
+    flex: 1;
+  }
+
+  footer {
+    gap: 14px;
+  }
+
+  .footer-meta {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    scroll-padding-top: 154px;
+  }
+
+  .app-shell {
+    padding: 0 16px;
+  }
+
+  .topbar {
+    gap: 10px;
+  }
+
+  .quick-nav {
+    flex: 0 0 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 4px;
+    scrollbar-width: none;
+  }
+
+  .quick-nav a {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 10vw, 52px);
+  }
+
+  .hero-actions {
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .today-checklist {
+    margin-top: 22px;
+  }
+
+  .today-section,
+  .daily-practice-section,
+  .daily-reading-section,
+  .history-section,
+  .quiz-section {
+    padding-top: 48px;
+  }
+
+  .word-card,
+  .practice-card,
+  .quiz-card {
+    padding: 20px;
+  }
+
+  .article-feature-copy {
+    padding: 26px 22px;
+  }
+
+  .article-number {
+    min-height: 120px;
+    padding: 20px 22px;
+  }
+
+  .article-reader {
+    scroll-margin-top: 154px;
+  }
+
+  .article-body {
+    font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
   }
 }
