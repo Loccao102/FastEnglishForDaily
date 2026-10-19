@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ARTICLES_BY_ID } from "@/lib/articles";
 
 type Props = {
@@ -26,6 +26,17 @@ export default function DailyArticleExperience({
   onMarkRead
 }: Props) {
   const [activeDate, setActiveDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeDate) return;
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("article-reader")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start"
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeDate]);
 
   const history = useMemo(
     () =>
@@ -65,6 +76,8 @@ export default function DailyArticleExperience({
           <div className="article-actions">
             <button
               className="primary-button"
+              aria-expanded={activeDate === today}
+              aria-controls="article-reader"
               onClick={() => setActiveDate(today)}
             >
               {readDates.includes(today) ? "Đọc lại bài hôm nay" : "Đọc bài hôm nay"} →
@@ -94,6 +107,7 @@ export default function DailyArticleExperience({
           return (
             <button
               className={"article-history-card " + (activeDate === date ? "active" : "")}
+              aria-pressed={activeDate === date}
               key={date}
               onClick={() => setActiveDate(date)}
             >
