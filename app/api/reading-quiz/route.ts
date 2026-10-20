@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           model: process.env.OPENAI_READING_MODEL || "gpt-4.1-mini",
           store: false,
-          max_output_tokens: 1500,
+          max_output_tokens: 2300,
           instructions: [
             "You are a careful English reading coach for CEFR B2-C2 learners.",
             "Generate exactly 5 challenging four-choice comprehension questions in English.",
@@ -67,8 +67,6 @@ export async function POST(request: NextRequest) {
                 properties: {
                   questions: {
                     type: "array",
-                    minItems: 5,
-                    maxItems: 5,
                     items: {
                       type: "object",
                       additionalProperties: false,
