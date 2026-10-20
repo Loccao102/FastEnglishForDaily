@@ -2208,3 +2208,242 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   color: #476352;
   max-width: 250px;
 }
+
+
+/* Reading Studio v2: contextual dictionary, flashcards and comprehension */
+.selection-toolbar {
+  width: min(365px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  gap: 12px;
+  border-radius: 17px;
+  padding: 13px;
+}
+.selection-toolbar-title {
+  max-width: 100%;
+  font-weight: 750;
+  color: #263f30;
+}
+.selection-dictionary { display: grid; gap: 5px; }
+.selection-ipa { color: #47765a; font-size: 12px; font-weight: 600; }
+.selection-dict-definition {
+  font-size: 12px;
+  color: #37463a;
+  line-height: 1.55;
+  max-height: 100px;
+  overflow-y: auto;
+}
+.selection-dict-definition span {
+  color: #688473;
+  font-style: italic;
+}
+.selection-dictionary small { color: #67766a; }
+.selection-dictionary-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 6px; }
+.selection-dictionary-actions button,
+.selection-dictionary-actions a {
+  border: 1px solid #d4e3d5;
+  border-radius: 9px;
+  color: #26583a;
+  background: #f0f8f0;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.selection-toolbar-actions { border-top: 1px solid #e3e9e0; padding-top: 12px; }
+.reading-learning-studio {
+  border-top: 1px solid var(--reader-line);
+  margin-top: 40px;
+  padding-top: 32px;
+}
+.learning-studio-header { margin-bottom: 21px; }
+.learning-studio-header h3 {
+  font-family: var(--font-display);
+  font-size: clamp(27px, 3vw, 39px);
+  font-weight: 650;
+  margin: 6px 0 8px;
+  letter-spacing: -.035em;
+  color: var(--reader-ink);
+}
+.learning-studio-header p { color: var(--reader-muted); margin: 0; font-size: 13px; line-height: 1.6; }
+.learning-tools-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+.learning-tool-panel {
+  padding: 22px;
+  background: var(--reader-panel);
+  border: 1px solid var(--reader-line);
+  border-radius: 20px;
+  min-width: 0;
+  color: var(--reader-ink);
+}
+.learning-panel-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 22px; }
+.learning-tool-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 43px; height: 43px;
+  border-radius: 13px;
+  background: #d2e9cb;
+  color: #315b3c;
+  font-size: 23px;
+}
+.learning-panel-heading h4 { font-size: 16px; margin: 0 0 4px; }
+.learning-panel-heading p { font-size: 11px; line-height: 1.55; margin: 0; color: var(--reader-muted); }
+.study-scope { display: flex; gap: 5px; background: var(--reader-surface); border: 1px solid var(--reader-line); padding: 4px; border-radius: 12px; margin-bottom: 17px; }
+.study-scope button {
+  flex: 1; cursor: pointer; padding: 8px;
+  background: transparent; border: 0; border-radius: 9px;
+  color: var(--reader-muted); font-weight: 750; font-size: 11px;
+}
+.study-scope button.active { color: #173d27; background: #d7ebd1; }
+.study-placeholder {
+  min-height: 215px;
+  border-radius: 16px;
+  border: 1px dashed var(--reader-line);
+  color: var(--reader-muted);
+  font-size: 13px;
+  padding: 26px;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  text-align: center;
+}
+.study-placeholder strong { color: var(--reader-ink); font-size: 17px; }
+.learning-flashcard {
+  min-height: 230px;
+  border-radius: 18px;
+  padding: 24px;
+  background: var(--reader-surface);
+  border: 1px solid var(--reader-line);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+.flashcard-eyebrow { color: var(--reader-muted); font-size: 10px; font-weight: 800; letter-spacing: .09em; }
+.learning-flashcard > strong {
+  font-family: var(--font-article);
+  font-size: clamp(22px, 2.7vw, 31px);
+  font-weight: 550;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.flashcard-reveal {
+  display: inline-flex;
+  justify-content: center;
+  padding: 13px;
+  background: #245a3e;
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+.flashcard-back { font-size: 12px; line-height: 1.65; }
+.flashcard-meaning { color: var(--reader-ink); font-weight: 700; margin: 0 0 14px; }
+.flashcard-back blockquote {
+  border-left: 3px solid #b3d3ad;
+  margin: 0 0 15px;
+  padding-left: 12px;
+  font: italic 13px/1.7 var(--font-article);
+  color: var(--reader-muted);
+}
+.flashcard-speak {
+  font-size: 11px; padding: 8px 11px; cursor: pointer;
+  border: 1px solid var(--reader-line);
+  border-radius: 9px;
+  background: var(--reader-panel); color: var(--reader-ink);
+}
+.flashcard-grade { display: flex; gap: 10px; margin-top: 13px; }
+.flashcard-grade button { flex: 1; border: 1px solid var(--reader-line); padding: 13px 9px; border-radius: 11px; cursor: pointer; font-weight: 800; font-size: 12px; }
+.flashcard-grade button:first-child { color: #ae543d; background: #ffebe5; }
+.flashcard-grade button:last-child { color: #245e42; background: #dcf0dd; }
+.flashcard-grade button:disabled { cursor: not-allowed; opacity: .48; }
+.flashcard-hint { color: var(--reader-muted); font-size: 10px; line-height: 1.65; margin: 12px 0 0; }
+.reading-quiz-intro { font-size: 13px; line-height: 1.7; color: var(--reader-muted); }
+.reading-quiz-intro p { margin: 0 0 17px; }
+.reading-quiz-intro .primary-button { font-size: 12px; width: 100%; }
+.quiz-ai-button {
+  display: block; width: 100%; border: 1px solid var(--reader-line);
+  border-radius: 12px; background: var(--reader-surface); color: var(--reader-ink);
+  cursor: pointer; margin-top: 10px; padding: 13px 10px; font-weight: 750; font-size: 12px;
+}
+.quiz-ai-button:disabled { opacity: .55; cursor: wait; }
+.quiz-intro-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.quiz-intro-bar span {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--reader-muted);
+}
+.quiz-intro-bar button {
+  background: transparent; color: var(--reader-ink); border: 0;
+  font-size: 11px; font-weight: 800; cursor: pointer;
+}
+.reading-quiz-question {
+  margin: 0; padding: 17px 0;
+  border: 0; border-top: 1px solid var(--reader-line);
+  min-width: 0;
+}
+.reading-quiz-question legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 12px;
+  color: var(--reader-ink);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.6;
+}
+.reading-quiz-question legend span { color: #4d9166; }
+.reading-quiz-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  clear: both; cursor: pointer;
+  margin: 7px 0; padding: 10px 12px;
+  border: 1px solid var(--reader-line); border-radius: 10px;
+  background: var(--reader-surface);
+  color: var(--reader-ink);
+  font-size: 11px; line-height: 1.65;
+}
+.reading-quiz-option input { accent-color: #2d7e54; margin: 2px 0 0; flex-shrink: 0; }
+.reading-quiz-option.selected { border-color: #7dad90; }
+.reading-quiz-option.correct { background: #dff4e5; color: #234b35; border-color: #5fa879; }
+.reading-quiz-option.wrong { background: #fbe7e1; color: #823e30; border-color: #d88c76; }
+.reading-quiz-explanation {
+  clear: both; border-left: 3px solid #82bc94;
+  color: var(--reader-muted); font-size: 11px; line-height: 1.7;
+  padding: 9px 12px; margin: 12px 0 0;
+  background: var(--reader-surface);
+}
+.reading-quiz-explanation strong { color: var(--reader-ink); }
+.quiz-notice { color: var(--reader-muted); font-size: 11px; line-height: 1.6; }
+.reading-quiz-submit { width: 100%; margin-top: 17px; font-size: 12px; }
+.reading-quiz-result {
+  margin-top: 17px; padding: 18px; border-radius: 14px;
+  background: var(--reader-surface); display: grid; gap: 8px;
+}
+.reading-quiz-result strong { color: var(--reader-ink); font-size: 24px; }
+.reading-quiz-result span { color: var(--reader-muted); font-size: 12px; line-height: 1.6; }
+.reading-quiz-result button {
+  padding: 10px; border: 1px solid var(--reader-line); border-radius: 9px;
+  background: var(--reader-panel); color: var(--reader-ink); cursor: pointer;
+}
+@media (max-width: 900px) {
+  .learning-tools-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .learning-tool-panel { padding: 17px; }
+  .selection-toolbar { width: min(340px, calc(100vw - 28px)); }
+  .reading-quiz-option { font-size: 12px; }
+}
+
+
+.selection-context {
+  color: #6a786f;
+  background: #f7f8f4;
+  padding: 8px 10px;
+  border-radius: 9px;
+  line-height: 1.6;
+  font-size: 11px;
+  max-height: 85px;
+  overflow-y: auto;
+}
+.selection-context strong { color: #42644d; }
