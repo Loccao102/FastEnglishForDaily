@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ARTICLES_BY_ID } from "@/lib/articles";
 import { WORDS } from "@/lib/words";
+import ReadingLearningTools from "@/components/ReadingLearningTools";
 
 type Props = {
   today: string;
@@ -25,6 +26,7 @@ type SavedMarker = {
   savedAt: string;
 };
 type ReaderSettings = { theme: ReaderTheme; textSize: number };
+type DictionaryEntry = { ipa: string; definition: string; partOfSpeech: string };
 type SelectionDraft = {
   paragraphIndex: number;
   start: number;
@@ -107,6 +109,8 @@ export default function DailyArticleExperience({
   const [settings, setSettings] = useState<ReaderSettings>({ theme: "paper", textSize: 19 });
   const [ready, setReady] = useState(false);
   const [selectionDraft, setSelectionDraft] = useState<SelectionDraft | null>(null);
+  const [dictionary, setDictionary] = useState<DictionaryEntry | null>(null);
+  const [dictionaryLoading, setDictionaryLoading] = useState(false);
   const [focusedMarker, setFocusedMarker] = useState<string | null>(null);
   const [showAllNotes, setShowAllNotes] = useState(false);
   const articleBodyRef = useRef<HTMLDivElement>(null);
@@ -170,6 +174,35 @@ export default function DailyArticleExperience({
     setSelectionDraft(null);
     setFocusedMarker(null);
   }, [activeDate]);
+
+  useEffect(() => {
+    const term = selectionDraft?.text.trim() || "";
+    setDictionary(null);
+    if (!term || !/^[a-z][a-z' -]{0,43}$/i.test(term) || term.split(/\s+/).length > 2) {
+      setDictionaryLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setDictionaryLoading(true);
+    fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(term), { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: unknown) => {
+        if (!Array.isArray(data) || !data[0]) return;
+        const result = data[0] as {
+          phonetic?: string;
+          phonetics?: Array<{ text?: string }>;
+          meanings?: Array<{ partOfSpeech?: string; definitions?: Array<{ definition?: string }> }>;
+        };
+        setDictionary({
+          ipa: result.phonetic || result.phonetics?.find((entry) => entry.text)?.text || "",
+          definition: result.meanings?.[0]?.definitions?.[0]?.definition || "",
+          partOfSpeech: result.meanings?.[0]?.partOfSpeech || ""
+        });
+      })
+      .catch(() => {})
+      .finally(() => { if (!controller.signal.aborted) setDictionaryLoading(false); });
+    return () => controller.abort();
+  }, [selectionDraft?.text]);
 
   function openArticle(date: string) {
     setActiveDate(date);
@@ -547,6 +580,8 @@ export default function DailyArticleExperience({
             )}
           </div>
 
+          <ReadingLearningTools article={activeArticle} markers={markers} />
+
           <div className="reader-finish">
             <div>
               <strong>{activeRead ? "Bài này đã nằm trong lịch sử đọc ✓" : "Đọc xong rồi?"}</strong>
@@ -564,9 +599,22 @@ export default function DailyArticleExperience({
         <div className="selection-toolbar" role="toolbar" aria-label="Lưu đoạn đã chọn"
           style={{ left: selectionDraft.left, top: selectionDraft.top }}>
           <div className="selection-toolbar-title">Lưu: “{selectionDraft.text.slice(0, 32)}{selectionDraft.text.length > 32 ? "…" : ""}”</div>
-          {getMeaning(selectionDraft.text, activeArticle.id) && (
-            <div className="selection-hint">{getMeaning(selectionDraft.text, activeArticle.id)}</div>
-          )}
+          <div className="selection-dictionary">
+            {getMeaning(selectionDraft.text, activeArticle.id) && (
+              <div className="selection-hint"><strong>Nghĩa:</strong> {getMeaning(selectionDraft.text, activeArticle.id)}</div>
+            )}
+            {dictionary?.ipa && <span className="selection-ipa">{dictionary.ipa}</span>}
+            {dictionary?.definition && <div className="selection-dict-definition"><span>{dictionary.partOfSpeech}</span> {dictionary.definition}</div>}
+            {!dictionary?.definition && dictionaryLoading && <small>Đang tra từ điển…</small>}
+            <div className="selection-dictionary-actions">
+              <button onMouseDown={(event) => event.preventDefault()}
+                onClick={() => sayEnglish(selectionDraft.text)}>◖)) Nghe</button>
+              <a target="_blank" rel="noopener noreferrer"
+                href={"https://translate.google.com/?sl=en&tl=vi&op=translate&text=" + encodeURIComponent(selectionDraft.text)}>
+                Tra nghĩa ↗
+              </a>
+            </div>
+          </div>
           <div className="selection-toolbar-actions">
             {COLORS.map((color) => (
               <button key={color.key}
