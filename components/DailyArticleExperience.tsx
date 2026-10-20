@@ -605,6 +605,9 @@ export default function DailyArticleExperience({
             )}
             {dictionary?.ipa && <span className="selection-ipa">{dictionary.ipa}</span>}
             {dictionary?.definition && <div className="selection-dict-definition"><span>{dictionary.partOfSpeech}</span> {dictionary.definition}</div>}
+            <div className="selection-context"><strong>Trong bài:</strong> {activeArticle.paragraphs[selectionDraft.paragraphIndex]?.slice(
+              Math.max(0, selectionDraft.start - 45), selectionDraft.end + 45
+            )}</div>
             {!dictionary?.definition && dictionaryLoading && <small>Đang tra từ điển…</small>}
             <div className="selection-dictionary-actions">
               <button onMouseDown={(event) => event.preventDefault()}
