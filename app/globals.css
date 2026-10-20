@@ -2434,3 +2434,16 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   .selection-toolbar { width: min(340px, calc(100vw - 28px)); }
   .reading-quiz-option { font-size: 12px; }
 }
+
+
+.selection-context {
+  color: #6a786f;
+  background: #f7f8f4;
+  padding: 8px 10px;
+  border-radius: 9px;
+  line-height: 1.6;
+  font-size: 11px;
+  max-height: 85px;
+  overflow-y: auto;
+}
+.selection-context strong { color: #42644d; }
