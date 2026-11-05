@@ -1,4 +1,4 @@
-import { WORDS_BY_ID } from "./words";
+export type InsightWord = { word: string; level: string };
 
 export type InsightProgress = {
   completedDates: string[];
@@ -21,7 +21,7 @@ function dateKeys(today: string, days: number): string[] {
   });
 }
 
-export function buildLearningInsights(progress: InsightProgress, today: string) {
+export function buildLearningInsights(progress: InsightProgress, today: string, words: Record<string, InsightWord>) {
   const recent = dateKeys(today, 14);
   const completed = new Set(progress.completedDates);
   const practice = new Set(progress.practiceDates);
@@ -37,19 +37,19 @@ export function buildLearningInsights(progress: InsightProgress, today: string) 
   const practiced7 = last7.filter(day => day.practiced).length;
   const score7 = last7.reduce((sum, day) => sum + day.score, 0);
   const questions7 = last7.reduce((sum, day) => sum + day.total, 0);
-  const all = Object.entries(progress.review).filter(([id]) => Boolean(WORDS_BY_ID[id]));
+  const all = Object.entries(progress.review).filter(([id]) => Boolean(words[id]));
   const due = all.filter(([, value]) => value.nextReviewDate <= today);
   const weak = all.filter(([, state]) => state.wrongCount > 0).sort((a, b) => {
     const riskA = a[1].wrongCount * 2 - a[1].correctCount;
     const riskB = b[1].wrongCount * 2 - b[1].correctCount;
     return riskB - riskA || b[1].wrongCount - a[1].wrongCount || a[0].localeCompare(b[0]);
   }).slice(0, 6).map(([id, state]) => ({
-    id, word: WORDS_BY_ID[id].word, level: WORDS_BY_ID[id].level,
+    id, word: words[id].word, level: words[id].level,
     correct: state.correctCount, wrong: state.wrongCount,
     due: state.nextReviewDate <= today
   }));
   const upcoming = due.sort((a,b) => a[1].nextReviewDate.localeCompare(b[1].nextReviewDate))
-    .slice(0, 6).map(([id]) => WORDS_BY_ID[id]);
+    .slice(0, 6).map(([id]) => words[id]);
   return {
     activity, studied7, practiced7, score7, questions7,
     accuracy7: questions7 > 0 ? Math.round(100 * score7 / questions7) : null,
