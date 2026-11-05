@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { WORDS_BY_ID } from "@/lib/words";
+import { compareSpelling } from "@/lib/active-recall";
 import {
   applyReviewResult, dueReviewIds, isReviewState, localStudyDate,
   type ReviewState
@@ -39,6 +40,9 @@ export default function ReviewCenter(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
   const [revealed,setRevealed]=useState(false);
+  const [mode,setMode]=useState<"self"|"spelling">("self");
+  const [typed,setTyped]=useState("");
+  const [spellingCorrect,setSpellingCorrect]=useState<boolean|null>(null);
   const [reviewed,setReviewed]=useState(0);
   const [correct,setCorrect]=useState(0);
   const [filter,setFilter]=useState<"all"|"B2"|"C1"|"C2">("all");
@@ -54,7 +58,7 @@ export default function ReviewCenter(){
     }
     refresh();
     const onStorage=(event:StorageEvent)=>{
-      if(event.key===STORAGE_KEY){refresh();setRevealed(false);}
+      if(event.key===STORAGE_KEY){refresh();setRevealed(false);setTyped("");setSpellingCorrect(null);}
     };
     window.addEventListener("storage",onStorage);
     return ()=>window.removeEventListener("storage",onStorage);
@@ -85,6 +89,8 @@ export default function ReviewCenter(){
       setReviewed(n=>n+1);
       if(remembered)setCorrect(n=>n+1);
       setRevealed(false);
+      setTyped("");
+      setSpellingCorrect(null);
     }catch(err){
       setError(err instanceof Error?err.message:"Không thể lưu lần ôn này.");
     }
@@ -107,11 +113,20 @@ export default function ReviewCenter(){
     <section className="review-center-content" aria-label="Ôn luyện từ đến hạn">
       {error&&<p className="review-center-error" role="alert">{error}</p>}
       <div className="review-center-toolbar">
-        <div><h2>Hàng chờ ôn tập</h2><p>Đánh giá theo khả năng nhớ thật của bạn.</p></div>
+        <div><h2>Hàng chờ ôn tập</h2><p>Đánh giá theo khả năng nhớ thật của bạn.</p>
+          <div className="review-mode-tabs" aria-label="Chọn cách ôn tập">
+            <button type="button" className={mode==="self"?"active":""} onClick={()=>{
+              setMode("self");setRevealed(false);setTyped("");setSpellingCorrect(null);
+            }}>Lật thẻ tự đánh giá</button>
+            <button type="button" className={mode==="spelling"?"active":""} onClick={()=>{
+              setMode("spelling");setRevealed(false);setTyped("");setSpellingCorrect(null);
+            }}>Viết lại từ tiếng Anh</button>
+          </div>
+        </div>
         <div className="review-center-filters" aria-label="Lọc cấp độ">
           {(["all","B2","C1","C2"] as const).map(level=>
             <button key={level} type="button" className={filter===level?"active":""}
-              onClick={()=>{setFilter(level);setRevealed(false);}}>
+              onClick={()=>{setFilter(level);setRevealed(false);setTyped("");setSpellingCorrect(null);}}>
               {level==="all"?"Tất cả":level}
             </button>
           )}
@@ -121,12 +136,18 @@ export default function ReviewCenter(){
       current?<div className="review-center-card">
         <div className="review-center-card-top"><span>{current.level}</span><span>{visibleIds.length} từ còn trong nhóm</span></div>
         <div className="review-center-prompt">
-          <span>HÃY NHỚ LẠI NGHĨA CỦA TỪ</span>
-          <h3>{current.word}</h3>
-          <button type="button" onClick={()=>pronounce(current.word)}>◖)) Phát âm</button>
-          <p>{current.partOfSpeech}</p>
+          {mode==="self"?<>
+            <span>HÃY NHỚ LẠI NGHĨA CỦA TỪ</span>
+            <h3>{current.word}</h3>
+            <button type="button" onClick={()=>pronounce(current.word)}>◖)) Phát âm</button>
+            <p>{current.partOfSpeech}</p>
+          </>:<>
+            <span>ĐỌC NGHĨA VÀ VIẾT TỪ TIẾNG ANH</span>
+            <h3>{current.meaning}</h3>
+            <p>{current.level} · {current.partOfSpeech}</p>
+          </>}
         </div>
-        {revealed?<div className="review-center-answer">
+        {mode==="self" ? revealed?<div className="review-center-answer">
           <span>ĐÁP ÁN</span>
           <strong>{current.meaning}</strong>
           <p>{current.definition}</p>
@@ -137,7 +158,30 @@ export default function ReviewCenter(){
           </div>
         </div>:<button type="button" className="review-center-reveal" onClick={()=>setRevealed(true)}>
           Lật thẻ xem đáp án
-        </button>}
+        </button> : <div className="review-spelling">
+          <form onSubmit={event=>{
+            event.preventDefault();
+            if(!typed.trim()||spellingCorrect!==null)return;
+            setSpellingCorrect(compareSpelling(typed,current.word).correct);
+          }}>
+            <label htmlFor="spelling-answer">Nhập từ tiếng Anh bạn nhớ được</label>
+            <div className="review-spelling-input">
+              <input id="spelling-answer" value={typed} onChange={event=>setTyped(event.target.value)}
+                autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                disabled={spellingCorrect!==null}
+                placeholder="Ví dụ: allocate" maxLength={120}/>
+              <button type="submit" disabled={!typed.trim()||spellingCorrect!==null}>Kiểm tra</button>
+            </div>
+          </form>
+          {spellingCorrect!==null&&<div className={"review-spelling-result "+(spellingCorrect?"correct":"incorrect")} role="status">
+            <strong>{spellingCorrect?"Chính xác!":"Chưa chính xác"}</strong>
+            <p>Bạn nhập: <b>{typed}</b></p>
+            <p>Đáp án: <b>{current.word}</b> · {current.meaning}</p>
+            <blockquote>{current.example}</blockquote>
+            <button type="button" onClick={()=>rate(spellingCorrect)}>Ghi nhận kết quả và sang thẻ tiếp →</button>
+          </div>}
+          <p className="review-spelling-hint">Kết quả chỉ cập nhật lịch ôn khi bạn bấm “Ghi nhận kết quả”.</p>
+        </div>}
       </div>:<div className="review-center-empty">
         <div aria-hidden="true">✓</div>
         <h3>{dueIds.length?"Không còn thẻ đến hạn ở cấp độ này.":"Bạn đã ôn xong các từ đến hạn!"}</h3>
