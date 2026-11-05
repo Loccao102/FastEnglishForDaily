@@ -7,18 +7,11 @@ import DailyArticleExperience from "@/components/DailyArticleExperience";
 import DailyPracticeExperience from "@/components/DailyPracticeExperience";
 import LearningBackupControls from "@/components/LearningBackupControls";
 import { buildLearningInsights } from "@/lib/progress-insights";
+import { createReviewState, applyReviewResult, type ReviewState } from "@/lib/review-schedule";
 
 type LearnedWord = {
   firstLearnedDate: string;
   lastSeenDate: string;
-};
-
-type ReviewState = {
-  box: number;
-  nextReviewDate: string;
-  correctCount: number;
-  wrongCount: number;
-  lastReviewedDate: string | null;
 };
 
 type DailyPracticeRecord = {
@@ -151,49 +144,6 @@ function buildDailyArticlePlan(dateKey: string, assignedIds: Set<string>) {
   const fresh = ARTICLES.filter((article) => !assignedIds.has(article.id));
   const pool = fresh.length > 0 ? fresh : ARTICLES;
   return seededShuffle(pool, hashString("article-" + dateKey))[0]?.id ?? ARTICLES[0].id;
-}
-
-function addDays(dateKey: string, days: number) {
-  const parts = dateKey.split("-").map(Number);
-  const date = new Date(parts[0], parts[1] - 1, parts[2]);
-  date.setDate(date.getDate() + days);
-  return localDateKey(date);
-}
-
-function createReviewState(dateKey: string): ReviewState {
-  return {
-    box: 0,
-    nextReviewDate: addDays(dateKey, 1),
-    correctCount: 0,
-    wrongCount: 0,
-    lastReviewedDate: null
-  };
-}
-
-function applyReviewResult(
-  state: ReviewState,
-  correct: boolean,
-  dateKey: string
-): ReviewState {
-  if (!correct) {
-    return {
-      ...state,
-      box: 0,
-      nextReviewDate: addDays(dateKey, 1),
-      wrongCount: state.wrongCount + 1,
-      lastReviewedDate: dateKey
-    };
-  }
-
-  const nextBox = Math.min(5, state.box + 1);
-  const intervals = [1, 2, 4, 7, 14, 30];
-  return {
-    ...state,
-    box: nextBox,
-    nextReviewDate: addDays(dateKey, intervals[nextBox]),
-    correctCount: state.correctCount + 1,
-    lastReviewedDate: dateKey
-  };
 }
 
 function buildDailyPracticePlan(
@@ -570,6 +520,7 @@ export default function FastEnglishApp() {
           <a href="#daily-reading">Bài đọc</a>
           <a href="#history">Lịch sử</a>
           <a href="#learning-insights">Phân tích</a>
+          <a href="/review">Ôn tất cả từ</a>
         </nav>
       </header>
 
@@ -663,7 +614,7 @@ export default function FastEnglishApp() {
             <h2 id="insights-title">Học đều, nhớ sâu.</h2>
             <p>Thống kê thực từ lịch sử học trên thiết bị này, cập nhật sau mỗi buổi.</p>
           </div>
-          <a href="#daily-practice" className="review-link">Ôn từ đến hạn →</a>
+          <a href="/review" className="review-link">Ôn tất cả từ đến hạn →</a>
         </div>
         <div className="insight-metrics">
           <article><strong>{insights.studied7}/7</strong><span>Ngày học trong 7 ngày</span></article>
