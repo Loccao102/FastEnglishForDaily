@@ -6,6 +6,7 @@ import { ARTICLES } from "@/lib/articles";
 import DailyArticleExperience from "@/components/DailyArticleExperience";
 import DailyPracticeExperience from "@/components/DailyPracticeExperience";
 import LearningBackupControls from "@/components/LearningBackupControls";
+import { buildLearningInsights } from "@/lib/progress-insights";
 
 type LearnedWord = {
   firstLearnedDate: string;
@@ -406,6 +407,7 @@ export default function FastEnglishApp() {
       : 7 - cycleProgress;
   const learnedCount = Object.keys(progress.learned).length;
   const latestQuiz = progress.quizResults.at(-1);
+  const insights = useMemo(() => buildLearningInsights(progress, today, WORDS_BY_ID), [progress, today]);
   const displayStreak =
     progress.lastStudyDate === today || progress.lastStudyDate === yesterdayKey()
       ? progress.streak
@@ -567,6 +569,7 @@ export default function FastEnglishApp() {
           <a href="#daily-practice">Luyện tập</a>
           <a href="#daily-reading">Bài đọc</a>
           <a href="#history">Lịch sử</a>
+          <a href="#learning-insights">Phân tích</a>
         </nav>
       </header>
 
@@ -652,6 +655,42 @@ export default function FastEnglishApp() {
             <span>Review gần nhất</span>
           </div>
         </article>
+      </section>
+
+      <section className="learning-insights" id="learning-insights" aria-labelledby="insights-title">
+        <div className="section-heading">
+          <div><span className="eyebrow">PERSONAL LEARNING ANALYTICS</span>
+            <h2 id="insights-title">Học đều, nhớ sâu.</h2>
+            <p>Thống kê thực từ lịch sử học trên thiết bị này, cập nhật sau mỗi buổi.</p>
+          </div>
+          <a href="#daily-practice" className="review-link">Ôn từ đến hạn →</a>
+        </div>
+        <div className="insight-metrics">
+          <article><strong>{insights.studied7}/7</strong><span>Ngày học trong 7 ngày</span></article>
+          <article><strong>{insights.practiced7}/7</strong><span>Ngày đã luyện</span></article>
+          <article><strong>{insights.accuracy7===null?"—":insights.accuracy7+"%"}</strong><span>Độ chính xác 7 ngày</span></article>
+          <article><strong>{insights.dueCount}</strong><span>Từ đến hạn ôn</span></article>
+        </div>
+        <div className="insight-panels">
+          <article className="insight-panel">
+            <h3>Nhịp học 14 ngày</h3>
+            <div className="insight-days" role="img" aria-label={"14 ngày: "+insights.activity.filter(day=>day.studied).length+" ngày đã hoàn thành"}>
+              {insights.activity.map(day=><div key={day.date} className={"insight-day "+(day.studied?"studied":day.practiced?"practiced":"")} title={day.date+": "+(day.studied?"Đã hoàn thành":day.practiced?"Đã luyện tập":"Chưa học")}>
+                <span aria-hidden="true">{day.date.slice(-2)}</span>
+              </div>)}
+            </div>
+            <p>Ô xanh đậm: hoàn thành đủ bài. Ô xanh nhạt: đã luyện nhưng chưa hoàn tất.</p>
+          </article>
+          <article className="insight-panel">
+            <h3>Từ cần củng cố</h3>
+            {insights.weak.length?<div className="insight-weak-list">
+              {insights.weak.map(word=><div key={word.id}>
+                <button type="button" onClick={()=>speak(word.word)} aria-label={"Phát âm "+word.word}>◖))</button>
+                <strong>{word.word}</strong><small>{word.level}</small><span>{word.wrong} lần sai · {word.correct} lần đúng{word.due?" · Đến hạn":""}</span>
+              </div>)}
+            </div>:<p>Chưa có từ nào mắc lỗi. Tiếp tục luyện mỗi ngày để có phân tích cá nhân.</p>}
+          </article>
+        </div>
       </section>
 
       {pendingCycle && (
