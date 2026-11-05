@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";
+import { WORDS, WORDS_BY_ID } from "@/lib/words";
+import { hashString, seededShuffle, selectDailyWords, pendingQuizCycle } from "@/lib/daily-planning";
 import { ARTICLES } from "@/lib/articles";
 import DailyArticleExperience from "@/components/DailyArticleExperience";
 import DailyPracticeExperience from "@/components/DailyPracticeExperience";
@@ -81,63 +82,8 @@ function yesterdayKey() {
   return localDateKey(date);
 }
 
-function hashString(input: string) {
-  let hash = 2166136261;
-  for (let index = 0; index < input.length; index += 1) {
-    hash ^= input.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function mulberry32(seed: number) {
-  return function random() {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function seededShuffle<T>(items: T[], seed: number) {
-  const result = [...items];
-  const random = mulberry32(seed);
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(random() * (index + 1));
-    [result[index], result[randomIndex]] = [result[randomIndex], result[index]];
-  }
-  return result;
-}
-
-function buildDailyPlan(dateKey: string, learnedIds: Set<string>) {
-  const seed = hashString(dateKey);
-  const patterns: CefrLevel[][] = [
-    ["B2", "C1", "B2", "C2", "C1"],
-    ["C1", "B2", "C2", "B2", "C1"],
-    ["B2", "C2", "C1", "C1", "B2"],
-    ["C2", "B2", "C1", "B2", "C1"]
-  ];
-  const levels = patterns[seed % patterns.length];
-  const used = new Set<string>();
-  const result: string[] = [];
-
-  levels.forEach((level, index) => {
-    const fresh = WORDS.filter(
-      (entry) => entry.level === level && !learnedIds.has(entry.id) && !used.has(entry.id)
-    );
-    const fallback = WORDS.filter(
-      (entry) => entry.level === level && !used.has(entry.id)
-    );
-    const pool = fresh.length > 0 ? fresh : fallback;
-    const pick = seededShuffle(pool, seed + index * 997)[0];
-
-    if (pick) {
-      used.add(pick.id);
-      result.push(pick.id);
-    }
-  });
-
-  return result;
+function buildDailyPlan(dateKey:string,learnedIds:Set<string>){
+  return selectDailyWords(dateKey,learnedIds,WORDS);
 }
 
 function buildDailyArticlePlan(dateKey: string, assignedIds: Set<string>) {
@@ -198,13 +144,7 @@ function formatDate(dateKey: string) {
 }
 
 function getPendingCycle(progress: Progress) {
-  const eligibleCycles = Math.floor(progress.completedDates.length / 7);
-  for (let cycle = 1; cycle <= eligibleCycles; cycle += 1) {
-    if (!progress.quizResults.some((result) => result.cycle === cycle)) {
-      return cycle;
-    }
-  }
-  return null;
+  return pendingQuizCycle(progress.completedDates.length,progress.quizResults);
 }
 
 function getCycleWordIds(progress: Progress, cycle: number) {
@@ -341,7 +281,10 @@ export default function FastEnglishApp() {
   const pendingCycle = getPendingCycle(progress);
   const quiz = useMemo(
     () => (pendingCycle ? buildQuiz(progress, pendingCycle) : []),
-    [pendingCycle, progress]
+    // Quiz depends on word assignments and completed days, not on unrelated
+    // progress updates such as practice marks, notes or reveal state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pendingCycle, progress.completedDates, progress.dailyPlans]
   );
 
   const revealedToday = completedToday

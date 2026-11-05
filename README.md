@@ -106,3 +106,11 @@ Trong `/review`, chọn **Viết lại từ tiếng Anh**. Ứng dụng hiển t
 - Có thể chuyển sang **Lật thẻ tự đánh giá** nếu đang muốn tập nhớ nghĩa. Khi chuyển chế độ hoặc cấp độ, câu trả lời đang nhập được xóa.
 - Chế độ viết chính tả không cần AI API hoặc máy chủ; kết quả lưu vào cùng tiến độ localStorage, nằm trong file sao lưu đã hỗ trợ.
 - Đánh giá chính tả chỉ dựa trên một đáp án từ vựng chuẩn, không đánh giá câu nói hay paraphrase đồng nghĩa. Không tự chấm khi còn chưa bấm Ghi nhận.
+
+## Tối ưu tạo kế hoạch từ vựng và quiz
+
+Thuật toán chọn 5 từ/ngày được tách thành module có kiểm thử và lập chỉ mục theo B2/C1/C2 một lần cho mỗi bộ từ vựng, thay vì mỗi lượt chọn lại quét cả danh sách hai lần. Bộ tạo số ngẫu nhiên và seed **giữ nguyên**, vì vậy ngày học, thứ tự và những từ đã chọn trước đây không thay đổi.
+
+Tìm kỳ quiz chưa làm dùng một tập hợp các kỳ hoàn tất, thay cho quét toàn bộ lịch sử ở từng kỳ. Quiz 7 ngày chỉ được tính lại khi lịch học/ngày hoàn tất thay đổi, không tính lại bởi cập nhật tiến độ không liên quan.
+
+Kiểm thử đối chiếu với thuật toán cũ qua nhiều ngày và ba trạng thái từ đã học, cùng bản kiểm tra seeded shuffle. Không đổi cấu trúc localStorage, không xóa streak/tiến độ, không yêu cầu API.
