@@ -169,7 +169,7 @@ export default function ReviewCenter(){
               <input id="spelling-answer" value={typed} onChange={event=>setTyped(event.target.value)}
                 autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                 disabled={spellingCorrect!==null}
-                placeholder="Ví dụ: allocate" maxLength={120}/>
+                placeholder="Nhập từ tiếng Anh…" maxLength={120}/>
               <button type="submit" disabled={!typed.trim()||spellingCorrect!==null}>Kiểm tra</button>
             </div>
           </form>
