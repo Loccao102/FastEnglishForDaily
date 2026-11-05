@@ -2568,3 +2568,34 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   .review-center-stats strong{font-size:25px}
   .review-center-card{border-radius:16px}
 }
+
+
+/* Active spelling recall mode */
+.review-mode-tabs{display:inline-flex;gap:5px;flex-wrap:wrap;margin-top:17px;padding:4px;
+  background:#e6eee5;border:1px solid #d7e6d7;border-radius:11px}
+.review-mode-tabs button{font-size:11px;line-height:1.3;color:#55745d;font-weight:730;
+  border:0;background:transparent;border-radius:8px;padding:9px 13px;cursor:pointer}
+.review-mode-tabs button.active{background:white;color:#2c784c;box-shadow:0 2px 7px #203d2a0d}
+.review-spelling{padding-top:17px;border-top:1px solid #e7eee8}
+.review-spelling form>label{display:block;font-size:12px;color:#597365;font-weight:750;margin:0 0 9px}
+.review-spelling-input{display:flex;gap:10px;align-items:stretch}
+.review-spelling-input input{flex:1;min-width:0;border:1px solid #d4e3d5;background:#fcfefa;
+  border-radius:12px;padding:14px 16px;outline:0;color:#244531;font-size:16px}
+.review-spelling-input input:focus{border-color:#55a073;box-shadow:0 0 0 3px #b9e3c464}
+.review-spelling-input button,.review-spelling-result>button{border:0;background:#347953;color:white;
+  font-weight:760;border-radius:12px;padding:12px 18px;cursor:pointer}
+.review-spelling-input button:disabled{opacity:.45;cursor:not-allowed}
+.review-spelling-result{padding:19px;margin-top:16px;border:1px solid #d3e5d5;background:#f4fbf3;border-radius:14px}
+.review-spelling-result.incorrect{border-color:#e8d0c4;background:#fff7f3}
+.review-spelling-result>strong{display:block;font-size:17px;margin-bottom:9px;color:#306f45}
+.review-spelling-result.incorrect>strong{color:#a65b45}
+.review-spelling-result p{margin:6px 0;color:#577262;font-size:13px;line-height:1.55}
+.review-spelling-result blockquote{margin:13px 0;background:white;border-radius:10px;padding:12px;
+  font-size:13px;line-height:1.65;color:#597361;font-style:italic}
+.review-spelling-result>button{width:100%;margin-top:6px}
+.review-spelling-hint{font-size:11px;line-height:1.6;color:#859887;margin-top:12px}
+@media(max-width:550px){
+  .review-mode-tabs{width:100%}.review-mode-tabs button{flex:1;min-width:115px}
+  .review-spelling-input{flex-direction:column}
+  .review-spelling-input button{min-height:44px}
+}
