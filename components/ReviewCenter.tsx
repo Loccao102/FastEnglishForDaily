@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { WORDS_BY_ID } from "@/lib/words";
 import { compareSpelling } from "@/lib/active-recall";
+import {useStudyDay} from "@/hooks/useStudyDay";
 import {
-  applyReviewResult, dueReviewIds, isReviewState, localStudyDate,
+  applyReviewResult, dueReviewIds, isReviewState,
   type ReviewState
 } from "@/lib/review-schedule";
 
@@ -35,7 +36,7 @@ function pronounce(word:string){
 }
 
 export default function ReviewCenter(){
-  const [today]=useState(()=>localStudyDate());
+  const today=useStudyDay();
   const [review,setReview]=useState<Record<string,ReviewState>>({});
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
@@ -63,6 +64,8 @@ export default function ReviewCenter(){
     window.addEventListener("storage",onStorage);
     return ()=>window.removeEventListener("storage",onStorage);
   },[]);
+
+  useEffect(()=>{setRevealed(false);setTyped("");setSpellingCorrect(null);},[today]);
 
   const dueIds=useMemo(()=>dueReviewIds(review,KNOWN_WORDS,today),[review,today]);
   const visibleIds=useMemo(()=>dueIds.filter(id=>

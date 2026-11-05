@@ -114,3 +114,11 @@ Thuật toán chọn 5 từ/ngày được tách thành module có kiểm thử 
 Tìm kỳ quiz chưa làm dùng một tập hợp các kỳ hoàn tất, thay cho quét toàn bộ lịch sử ở từng kỳ. Quiz 7 ngày chỉ được tính lại khi lịch học/ngày hoàn tất thay đổi, không tính lại bởi cập nhật tiến độ không liên quan.
 
 Kiểm thử đối chiếu với thuật toán cũ qua nhiều ngày và ba trạng thái từ đã học, cùng bản kiểm tra seeded shuffle. Không đổi cấu trúc localStorage, không xóa streak/tiến độ, không yêu cầu API.
+
+## Tự chuyển ngày học khi tab mở lâu
+
+Cả trang học 5 từ mỗi ngày và `/review` đều theo ngày **local của trình duyệt**. Khi qua nửa đêm, ứng dụng tự tạo lịch ngày mới và cập nhật những thẻ đến hạn mà không cần tải lại trang. Khi người học quay lại tab sau thời gian dài, ứng dụng kiểm tra ngày ngay lúc tab hiện ra hoặc cửa sổ được focus.
+
+Thay vì polling mỗi phút/giây, ứng dụng chỉ đặt một timeout tới ngay sau **nửa đêm tiếp theo**, rồi đặt lại. `useStudyDay` dọn timer và event listeners khi component unmount, không thêm network request hay lưu cache ngày.
+
+Khi ngày thay đổi, câu trả lời đang dở trên trang ôn được xóa để tránh chấm theo ngày cũ; những kết quả đã ghi nhận vẫn nằm trong localStorage. Điều này không thay đổi thuật toán spaced repetition hoặc bản sao lưu dữ liệu.
