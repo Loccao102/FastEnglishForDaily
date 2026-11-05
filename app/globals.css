@@ -2447,3 +2447,42 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   overflow-y: auto;
 }
 .selection-context strong { color: #42644d; }
+
+
+/* Local study data portability */
+.learning-backup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 28px;
+  margin: 48px 0 24px;
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: 22px;
+  border: 1px solid #dce6dc;
+  background: linear-gradient(135deg, #f7faf4, #edf5ed);
+  color: #234433;
+}
+.learning-backup > div:first-child { max-width: 630px; flex: 1 1 320px; }
+.learning-backup h2 {
+  margin: 8px 0 10px; font-size: clamp(22px, 2.5vw, 30px);
+  line-height: 1.2; letter-spacing: -.025em;
+}
+.learning-backup p { margin: 0; line-height: 1.7; font-size: 13px; }
+.learning-backup .learning-backup-note { margin-top: 10px; color: #63796c; font-size: 11px; }
+.learning-backup-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.learning-backup-actions button {
+  cursor: pointer; border: 1px solid #316f4d; border-radius: 12px;
+  padding: 12px 15px; background: #316f4d; color: #fff;
+  font: inherit; font-size: 12px; font-weight: 750;
+}
+.learning-backup-actions button + button { background: transparent; color: #245b3d; }
+.learning-backup-actions button:disabled { cursor: wait; opacity: .55; }
+.learning-backup .learning-backup-message {
+  flex: 1 0 100%; font-weight: 650; color: #275b41;
+}
+@media (max-width: 600px) {
+  .learning-backup { margin: 28px 0 18px; }
+  .learning-backup-actions { width: 100%; }
+  .learning-backup-actions button { flex: 1 1 150px; }
+}
