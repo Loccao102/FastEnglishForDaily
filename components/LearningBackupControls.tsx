@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import {
-  makeLearningBackup, restoreLearningBackup
+  makeLearningBackup, parseLearningBackup, restoreLearningBackup
 } from "@/lib/learning-backup";
 
 export default function LearningBackupControls() {
@@ -36,7 +36,6 @@ export default function LearningBackupControls() {
       if (file.size > 5 * 1024 * 1024) throw new Error("Bản sao lưu vượt quá 5MB.");
       const content = await file.text();
       // Parse and validate the entire file before asking to overwrite local data.
-      const { parseLearningBackup } = await import("@/lib/learning-backup");
       parseLearningBackup(content);
       if (!window.confirm("Khôi phục sẽ thay thế toàn bộ tiến độ, highlight, cài đặt đọc và lịch ôn flashcard hiện có trên thiết bị này. Tiếp tục?")) return;
       restoreLearningBackup(window.localStorage, content);
