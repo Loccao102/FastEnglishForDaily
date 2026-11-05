@@ -5,6 +5,7 @@ import { CefrLevel, WORDS, WORDS_BY_ID } from "@/lib/words";
 import { ARTICLES } from "@/lib/articles";
 import DailyArticleExperience from "@/components/DailyArticleExperience";
 import DailyPracticeExperience from "@/components/DailyPracticeExperience";
+import LearningBackupControls from "@/components/LearningBackupControls";
 
 type LearnedWord = {
   firstLearnedDate: string;
@@ -861,6 +862,7 @@ export default function FastEnglishApp() {
         </section>
       )}
 
+      <LearningBackupControls />
       <footer>
         <div className="brand compact">
           <span className="brand-mark">F</span>
