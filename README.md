@@ -97,3 +97,12 @@ Trên thanh điều hướng ở trang chính, chọn **Ôn tất cả từ** ho
 - Các từ đã ôn biến mất khỏi hàng chờ hiện tại và quay lại khi đến hạn; từ tồn nhiều ngày hoặc sai nhiều lần được ưu tiên.
 - Lưu trực tiếp dưới cùng key `fastenglish-progress-v1` nên có trong bản sao lưu/khôi phục JSON đã hỗ trợ. Nếu trang học ở tab khác đang mở, hãy tránh đồng thời cập nhật cùng một từ để giảm nguy cơ ghi đè từ tab cũ.
 - Trang /review hoạt động offline sau khi ứng dụng đã được tải nhưng không phải PWA đầy đủ; không có DB hay tài khoản.
+
+## Ôn chủ động bằng cách viết từ vựng
+
+Trong `/review`, chọn **Viết lại từ tiếng Anh**. Ứng dụng hiển thị nghĩa tiếng Việt và loại từ, người học phải nhập lại đúng chính tả tiếng Anh mà không được xem trước đáp án. Nút **Kiểm tra** so sánh nghiêm ngặt với từ gốc: không phân biệt hoa/thường, khoảng trắng thừa và khác biệt dấu nối typography; các lỗi gõ chữ khác vẫn bị đánh giá sai.
+
+- Khi kiểm tra, kết quả hiển thị từ chuẩn và câu ví dụ. Chỉ sau khi bấm **Ghi nhận kết quả và sang thẻ tiếp** thì lịch ôn Leitner mới được cập nhật.
+- Có thể chuyển sang **Lật thẻ tự đánh giá** nếu đang muốn tập nhớ nghĩa. Khi chuyển chế độ hoặc cấp độ, câu trả lời đang nhập được xóa.
+- Chế độ viết chính tả không cần AI API hoặc máy chủ; kết quả lưu vào cùng tiến độ localStorage, nằm trong file sao lưu đã hỗ trợ.
+- Đánh giá chính tả chỉ dựa trên một đáp án từ vựng chuẩn, không đánh giá câu nói hay paraphrase đồng nghĩa. Không tự chấm khi còn chưa bấm Ghi nhận.
