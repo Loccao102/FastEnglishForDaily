@@ -80,3 +80,10 @@ sẽ bị thay thế, vì vậy hãy sao lưu trước nếu muốn giữ lại.
 
 File JSON có thể chứa nội dung ghi chú cá nhân; không chia sẻ công khai và không
 commit file backup lên GitHub.
+
+
+## Phân tích học tập cá nhân
+
+Màn hình chính bổ sung mục **Phân tích**: 14 ô nhật ký học, số ngày học/luyện trong 7 ngày qua, độ chính xác của bài luyện (chỉ tính câu có kết quả thực tế), danh sách từ đến hạn và những từ đã trả lời sai nhiều lần. Có nút phát âm cho từng từ yếu và đường dẫn quay về bài luyện.
+
+Mọi số liệu tính trực tiếp từ lịch sử localStorage đang lưu; chưa có dữ liệu thì hiển thị dấu gạch ngang chứ không đặt điểm giả. Các chỉ số cũng được giữ lại khi sao lưu/khôi phục tiến độ bằng file JSON.
