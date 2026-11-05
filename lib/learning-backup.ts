@@ -23,7 +23,7 @@ function validEntry(key: LearningKey, value: unknown): boolean {
   if (key === "fastenglish-reader-highlights-v1") {
     return Array.isArray(value) && value.length <= 20000 && value.every(marker =>
       record(marker) && typeof marker.id === "string" && typeof marker.articleId === "string" &&
-      Number.isInteger(marker.paragraphIndex) && typeof marker.start === "number" &&
+      typeof marker.paragraphIndex === "number" && Number.isInteger(marker.paragraphIndex) && typeof marker.start === "number" &&
       typeof marker.end === "number" && marker.start >= 0 && marker.end > marker.start &&
       typeof marker.text === "string" && ["yellow","mint","rose","blue"].includes(String(marker.color))
     );
@@ -35,9 +35,9 @@ function validEntry(key: LearningKey, value: unknown): boolean {
   }
   return record(value) && Object.keys(value).length <= 20000 &&
     Object.values(value).every(card => record(card) &&
-      Number.isInteger(card.level) && typeof card.level === "number" &&
+      typeof card.level === "number" && Number.isInteger(card.level) &&
       card.level >= 0 && card.level <= 5 &&
-      validDate(card.due) && Number.isInteger(card.reviewed) &&
+      validDate(card.due) && typeof card.reviewed === "number" && Number.isInteger(card.reviewed) &&
       (card.lastReviewed === null || validDate(card.lastReviewed)));
 }
 
