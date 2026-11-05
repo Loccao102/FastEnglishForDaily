@@ -10,6 +10,7 @@ import LearningBackupControls from "@/components/LearningBackupControls";
 import { buildLearningInsights } from "@/lib/progress-insights";
 import { createReviewState, applyReviewResult, localStudyDate, type ReviewState } from "@/lib/review-schedule";
 import { useStudyDay } from "@/hooks/useStudyDay";
+import { chooseNextLearningAction } from "@/lib/learning-next";
 
 type LearnedWord = {
   firstLearnedDate: string;
@@ -295,6 +296,11 @@ export default function FastEnglishApp() {
   const learnedCount = Object.keys(progress.learned).length;
   const latestQuiz = progress.quizResults.at(-1);
   const insights = useMemo(() => buildLearningInsights(progress, today, WORDS_BY_ID), [progress, today]);
+  const nextAction=chooseNextLearningAction({
+    completedToday,revealedToday,totalToday:todayWords.length,
+    practicedToday:practiceCompletedToday,dueWords:insights.dueCount,
+    pendingWeeklyQuiz:Boolean(pendingCycle),readToday:progress.readArticleDates.includes(today)
+  });
   const displayStreak =
     progress.lastStudyDate === today || progress.lastStudyDate === yesterdayKey()
       ? progress.streak
@@ -470,11 +476,12 @@ export default function FastEnglishApp() {
             Học vừa sức, ôn đúng lúc, tiến bộ theo nhịp của bạn.
           </p>
           <div className="hero-actions">
-            <a className="primary-button" href="#today">
-              {completedToday ? "Xem lại bài hôm nay" : "Bắt đầu học hôm nay"} <span aria-hidden="true">↓</span>
+            <a className="primary-button" href={nextAction.href}>
+              {nextAction.label} <span aria-hidden="true">→</span>
             </a>
             <span className="today-label">{formatDate(today)}</span>
           </div>
+          <p className="next-action-description" aria-live="polite">{nextAction.description}</p>
           <div className="today-checklist" aria-live="polite">
             <div className="today-checklist-title">
               <strong>Tiến độ hôm nay</strong>
@@ -656,7 +663,7 @@ export default function FastEnglishApp() {
           onComplete={completeDailyPractice}
         />
 
-        <div className="complete-row">
+        <div className="complete-row" id="finish-today">
           <div>
             <strong>
               {completedToday
