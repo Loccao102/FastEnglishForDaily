@@ -122,3 +122,9 @@ Cả trang học 5 từ mỗi ngày và `/review` đều theo ngày **local củ
 Thay vì polling mỗi phút/giây, ứng dụng chỉ đặt một timeout tới ngay sau **nửa đêm tiếp theo**, rồi đặt lại. `useStudyDay` dọn timer và event listeners khi component unmount, không thêm network request hay lưu cache ngày.
 
 Khi ngày thay đổi, câu trả lời đang dở trên trang ôn được xóa để tránh chấm theo ngày cũ; những kết quả đã ghi nhận vẫn nằm trong localStorage. Điều này không thay đổi thuật toán spaced repetition hoặc bản sao lưu dữ liệu.
+
+## Một nút gợi ý bước học tiếp theo
+
+Trang chính không còn luôn đưa người học về đầu danh sách từ. Nút lớn ở đầu trang phản ánh đúng tiến độ đang có và đưa thẳng tới phần cần làm: mở các từ còn lại → hoàn thành bài luyện → xác nhận buổi học. Khi học xong, nút đề xuất ôn từ đến hạn, làm kiểm tra 7 ngày, đọc bài hôm nay hoặc xem thống kê cá nhân.
+
+Lời gợi ý thay đổi theo dữ liệu tiến độ localStorage đang có, không cần tài khoản, dịch vụ API hay một lần nhập liệu khác. Bài test kiểm tra các giai đoạn, ưu tiên khi có nhiều việc đến hạn và trạng thái đã hoàn tất.

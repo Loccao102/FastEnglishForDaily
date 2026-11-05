@@ -2599,3 +2599,14 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   .review-spelling-input{flex-direction:column}
   .review-spelling-input button{min-height:44px}
 }
+
+
+/* One-step personal learning guide, directly below the primary action. */
+.next-action-description{
+  margin:10px 0 17px;
+  max-width:510px;
+  font-size:12px;
+  line-height:1.6;
+  color:#57735e;
+}
+#finish-today{scroll-margin-top:85px}
