@@ -87,3 +87,13 @@ commit file backup lên GitHub.
 Màn hình chính bổ sung mục **Phân tích**: 14 ô nhật ký học, số ngày học/luyện trong 7 ngày qua, độ chính xác của bài luyện (chỉ tính câu có kết quả thực tế), danh sách từ đến hạn và những từ đã trả lời sai nhiều lần. Có nút phát âm cho từng từ yếu và đường dẫn quay về bài luyện.
 
 Mọi số liệu tính trực tiếp từ lịch sử localStorage đang lưu; chưa có dữ liệu thì hiển thị dấu gạch ngang chứ không đặt điểm giả. Các chỉ số cũng được giữ lại khi sao lưu/khôi phục tiến độ bằng file JSON.
+
+## Trung tâm ôn tập — /review
+
+Trên thanh điều hướng ở trang chính, chọn **Ôn tất cả từ** hoặc từ bảng **Phân tích**. Trang /review tập hợp **toàn bộ** từ có lịch ôn đã đến hạn trong dữ liệu hiện tại, thay vì chỉ hai câu thực hành hằng ngày.
+
+- Lọc theo B2/C1/C2, nghe phát âm, tự trả lời trước khi lật đáp án.
+- Đánh giá **Chưa nhớ** hoặc **Nhớ được**. Lịch ôn được cập nhật bằng đúng quy tắc của bài ôn hiện tại (Leitner), không tự thay đổi streak, số buổi học hoặc kết quả weekly quiz.
+- Các từ đã ôn biến mất khỏi hàng chờ hiện tại và quay lại khi đến hạn; từ tồn nhiều ngày hoặc sai nhiều lần được ưu tiên.
+- Lưu trực tiếp dưới cùng key `fastenglish-progress-v1` nên có trong bản sao lưu/khôi phục JSON đã hỗ trợ. Nếu trang học ở tab khác đang mở, hãy tránh đồng thời cập nhật cùng một từ để giảm nguy cơ ghi đè từ tab cũ.
+- Trang /review hoạt động offline sau khi ứng dụng đã được tải nhưng không phải PWA đầy đủ; không có DB hay tài khoản.
