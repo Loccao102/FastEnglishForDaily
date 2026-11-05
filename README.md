@@ -64,3 +64,19 @@ Nút **Thử tạo câu hỏi bằng AI** gửi duy nhất ID bài đọc tới 
 - Dữ liệu flashcard vẫn là localStorage, chưa đồng bộ nhiều thiết bị.
 - Nội dung tra từ từ Free Dictionary API là tiếng Anh và có thể không có kết quả với cụm dài.
 - Kiểm tra không-AI chủ yếu kiểm tra nhận diện ý và từ vựng; AI giúp tạo câu suy luận phong phú hơn nếu được cấu hình.
+
+
+## Sao lưu và khôi phục toàn bộ dữ liệu học
+
+Ở cuối trang chính, dùng **Sao lưu dữ liệu** để tải xuống một file JSON.
+Bản sao lưu bao gồm tiến độ 5 từ/ngày, streak, lịch sử bài kiểm tra, highlight/ghi chú,
+cài đặt đọc và lịch giãn cách của flashcard. Tất cả chạy trong trình duyệt, không gửi
+dữ liệu tới server hay dịch vụ bên ngoài.
+
+Trên máy/trình duyệt mới, chọn **Khôi phục từ file** và xác nhận ghi đè.
+Hệ thống kiểm tra định dạng, giới hạn file 5MB, chỉ chấp nhận đúng bốn kho dữ liệu
+FastEnglish và tải lại trang sau khi khôi phục. Dữ liệu học hiện có trên thiết bị
+sẽ bị thay thế, vì vậy hãy sao lưu trước nếu muốn giữ lại.
+
+File JSON có thể chứa nội dung ghi chú cá nhân; không chia sẻ công khai và không
+commit file backup lên GitHub.
