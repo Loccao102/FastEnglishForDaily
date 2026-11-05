@@ -8,7 +8,8 @@ import DailyArticleExperience from "@/components/DailyArticleExperience";
 import DailyPracticeExperience from "@/components/DailyPracticeExperience";
 import LearningBackupControls from "@/components/LearningBackupControls";
 import { buildLearningInsights } from "@/lib/progress-insights";
-import { createReviewState, applyReviewResult, type ReviewState } from "@/lib/review-schedule";
+import { createReviewState, applyReviewResult, localStudyDate, type ReviewState } from "@/lib/review-schedule";
+import { useStudyDay } from "@/hooks/useStudyDay";
 
 type LearnedWord = {
   firstLearnedDate: string;
@@ -69,17 +70,10 @@ const EMPTY_PROGRESS: Progress = {
   quizResults: []
 };
 
-function localDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return year + "-" + month + "-" + day;
-}
-
 function yesterdayKey() {
   const date = new Date();
   date.setDate(date.getDate() - 1);
-  return localDateKey(date);
+  return localStudyDate(date);
 }
 
 function buildDailyPlan(dateKey:string,learnedIds:Set<string>){
@@ -180,7 +174,7 @@ function buildQuiz(progress: Progress, cycle: number): QuizQuestion[] {
 }
 
 export default function FastEnglishApp() {
-  const today = localDateKey();
+  const today = useStudyDay();
   const [progress, setProgress] = useState<Progress>(EMPTY_PROGRESS);
   const [hydrated, setHydrated] = useState(false);
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
